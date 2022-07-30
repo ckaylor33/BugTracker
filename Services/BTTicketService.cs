@@ -284,7 +284,16 @@ namespace BugTracker.Services
         {
             try
             {
-                return await _context.Tickets.FirstOrDefaultAsync(t => t.Id == ticketId);
+                return await _context.Tickets.Include(t => t.DeveloperUser)
+                                             .Include(t => t.OwnerUser)
+                                             .Include(t => t.Project)
+                                             .Include(t => t.TicketPriority)
+                                             .Include(t => t.TicketStatus)
+                                             .Include(t => t.TicketType)
+                                             .Include(t => t.Comments)
+                                             .Include(t => t.Attachments)
+                                             .Include(t => t.History)
+                                             .FirstOrDefaultAsync(t => t.Id == ticketId);
             }
             catch (Exception)
             {
@@ -419,6 +428,20 @@ namespace BugTracker.Services
             }
             catch (Exception)
             {
+                throw;
+            }
+        }
+
+        public async Task RestoreTicketAsync(Ticket ticket)
+        {
+            try
+            {
+                ticket.Archived = false;
+                await UpdateTicketAsync(ticket);
+            }
+            catch (Exception)
+            {
+
                 throw;
             }
         }
