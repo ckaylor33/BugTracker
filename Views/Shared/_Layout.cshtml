@@ -18,7 +18,7 @@
             <div class="col-12 col-sm-3 col-xl-2 px-sm-2 px-0 bg-dark d-flex sticky-top">
                 <div class="d-flex flex-sm-column flex-row flex-grow-1 align-items-center align-items-sm-start px-3 pt-2 text-white">
                     <a href="/" class="d-flex align-items-center pb-sm-3 mb-md-0 me-md-auto text-white text-decoration-none">
-                        <span class="fs-5">B<span class="d-none d-sm-inline">ugTracker</span></span>
+                        <span class="fs-5">B<span class="d-none d-sm-inline">BugTracker</span></span>
                     </a>
                     <partial name="_LoginPartial" />
 
@@ -48,6 +48,11 @@
                                     }
                                     <li><a class="dropdown-item" asp-area="" asp-controller="Projects" asp-action="AllProjects">All Projects</a></li>
                                     <li><a class="dropdown-item" asp-area="" asp-controller="Projects" asp-action="ArchivedProjects">Archived Projects</a></li>
+                                    @if (User.IsInRole(nameof(Roles.Admin)))
+                                    {
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Projects" asp-action="UnassignedProjects">Unassigned Projects</a></li>
+
+                                    }
                                 </ul>
                             </li>
                             <li class="dropdown">
@@ -57,9 +62,17 @@
                                 <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdown">
                                     <li><a class="dropdown-item" asp-area="" asp-controller="Tickets" asp-action="Create">New ticket...</a></li>
                                     <li><a class="dropdown-item" asp-area="" asp-controller="Tickets" asp-action="Index">Index</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Tickets" asp-action="MyTickets">My Tickets</a></li>
+                                    @if (!User.IsInRole(nameof(Roles.Admin)))
+                                    {
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Tickets" asp-action="MyTickets">My Tickets</a></li>
+                                    }
                                     <li><a class="dropdown-item" asp-area="" asp-controller="Tickets" asp-action="AllTickets">All Tickets</a></li>
                                     <li><a class="dropdown-item" asp-area="" asp-controller="Tickets" asp-action="ArchivedTickets">Archived Tickets</a></li>
+                                    @if (User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
+                                    {
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Tickets" asp-action="UnassignedTickets">Unassigned Tickets</a></li>
+                                    }
+
                                 </ul>
                             </li>
                             <li>

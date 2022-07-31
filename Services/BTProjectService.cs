@@ -307,6 +307,35 @@ namespace BugTracker.Services
         }
         #endregion
 
+        #region GetUnassignedProjectsAsync
+        public async Task<List<Project>> GetUnassignedProjectsAsync(int companyId)
+        {
+            List<Project> result = new();
+            List<Project> projects = new();
+
+            try
+            {
+                projects = await _context.Projects.Include(p => p.ProjectPriority)
+                                                  .Where(p => p.CompanyId == companyId).ToListAsync();
+
+                foreach (Project project in projects)
+                {
+                    if ((await GetProjectMembersByRoleAsync(project.Id, nameof(Roles.ProjectManager))).Count == 0)
+                    {
+                        result.Add(project);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            return result;
+        }
+        #endregion
+
         #region GetUserProjectsAsync
         public async Task<List<Project>> GetUserProjectsAsync(string userId)
         {
@@ -519,6 +548,6 @@ namespace BugTracker.Services
             _context.Update(project);
             await _context.SaveChangesAsync();
         }
-        #endregion    
+        #endregion
     }
 }

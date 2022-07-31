@@ -54,7 +54,7 @@ namespace BugTracker.Services
                 fileSize /= bytes;
                 counter++;
             }
-            return string.Format("{0:nl}{1}", fileSize, suffixes[counter]);
+            return string.Format("{0:n1}{1}", fileSize, suffixes[counter]);
         }
 
         public string GetFileIcon(string file)
@@ -64,7 +64,7 @@ namespace BugTracker.Services
             if (!string.IsNullOrEmpty(file))
             {
                 fileImage = Path.GetExtension(file).Replace(".", "");
-                return $"/img/png/{fileImage}.png";
+                return $"/img/contenttype/{fileImage}.png";
             }
             return fileImage;
         }

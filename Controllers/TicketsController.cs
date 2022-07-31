@@ -11,6 +11,9 @@ using Microsoft.AspNetCore.Identity;
 using BugTracker.Extensions;
 using BugTracker.Models.Enums;
 using BugTracker.Services.Interfaces;
+using System.IO;
+using Microsoft.AspNetCore.Authorization;
+using BugTracker.Models.ViewModels;
 
 namespace BugTracker.Controllers
 {
@@ -22,13 +25,15 @@ namespace BugTracker.Controllers
         private readonly IBTLookupService _lookupService;
         private readonly IBTTicketService _ticketService;
         private readonly IBTCompanyInfoService _companyInfoService;
+        private readonly IBTFileService _fileService;
 
         public TicketsController(ApplicationDbContext context,
                                  UserManager<BTUser> userManager,
                                  IBTProjectService projectService,
                                  IBTLookupService lookupService,
                                  IBTTicketService ticketService,
-                                 IBTCompanyInfoService companyInfoService)
+                                 IBTCompanyInfoService companyInfoService,
+                                 IBTFileService fileService)
         {
             _context = context;
             _userManager = userManager;
@@ -36,6 +41,7 @@ namespace BugTracker.Controllers
             _lookupService = lookupService;
             _ticketService = ticketService;
             _companyInfoService = companyInfoService;
+            _fileService = fileService;
         }
 
         // GET: Tickets
@@ -85,6 +91,68 @@ namespace BugTracker.Controllers
             return View(tickets);
         }
 
+        //GET: UnassignedTickets
+        [Authorize(Roles = "Admin,ProjectManager")]
+        public async Task<IActionResult> UnassignedTickets()
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+            string btUserId = _userManager.GetUserId(User);
+
+            List<Ticket> tickets = await _ticketService.GetUnassignedTicketsAsync(companyId);
+
+            if (User.IsInRole(nameof(Roles.Admin)))
+            {
+                return View(tickets);
+            }
+            else
+            {
+                List<Ticket> pmTickets = new();
+
+                foreach (Ticket ticket in tickets)
+                {
+                    if (await _projectService.IsAssignedProjectManagerAsync(btUserId, ticket.ProjectId))
+                    {
+                        pmTickets.Add(ticket);
+                    }
+                }
+
+                return View(pmTickets);
+            }
+        }
+
+        //GET: AssignDeveloper
+        [HttpGet]
+        public async Task<IActionResult> AssignDeveloper(int? id)
+        {
+            AssignDeveloperViewModel model = new();
+
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            model.Ticket = await _ticketService.GetTicketByIdAsync(id.Value);
+            model.Developers = new SelectList(await _projectService.GetProjectMembersByRoleAsync(model.Ticket.ProjectId, nameof(Roles.Developer)), "Id", "FullName");
+
+
+            return View(model);
+        }
+
+        //POST: AssignDeveloper
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignDeveloper(AssignDeveloperViewModel model)
+        {
+            if (model.DeveloperId != null)
+            {
+                await _ticketService.AssignTicketAsync(model.Ticket.Id, model.DeveloperId);
+                return RedirectToAction(nameof(Details), new { id = model.Ticket.Id });
+            }
+
+            return RedirectToAction(nameof(AssignDeveloper), new { id = model.Ticket.Id });
+
+        }
+
         // GET: Tickets/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -93,7 +161,7 @@ namespace BugTracker.Controllers
                 return NotFound();
             }
 
-            var ticket = await _ticketService.GetTicketByIdAsync(id.Value);
+            Ticket ticket = await _ticketService.GetTicketByIdAsync(id.Value);
 
             if (ticket == null)
             {
@@ -225,6 +293,67 @@ namespace BugTracker.Controllers
             ViewData["TicketTypeId"] = new SelectList(await _lookupService.GetTicketTypesAsync(), "Id", "Name", ticket.TicketTypeId);
 
             return View(ticket);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddTicketAttachment([Bind("Id,FormFile,Description,TicketId")] TicketAttachment ticketAttachment)
+        {
+            string statusMessage;
+
+            if (ModelState.IsValid && ticketAttachment.FormFile != null)
+            {
+                ticketAttachment.FileData = await _fileService.ConvertFileToByteArrayAsync(ticketAttachment.FormFile);
+                ticketAttachment.FileName = ticketAttachment.FormFile.FileName;
+                ticketAttachment.FileContentType = ticketAttachment.FormFile.ContentType;
+
+                ticketAttachment.Created = DateTimeOffset.Now;
+                ticketAttachment.UserId = _userManager.GetUserId(User);
+
+                await _ticketService.AddTicketAttachmentAsync(ticketAttachment);
+                statusMessage = "Success: New attachment added to Ticket.";
+            }
+            else
+            {
+                statusMessage = "Error: Invalid data.";
+
+            }
+
+            return RedirectToAction("Details", new { id = ticketAttachment.TicketId, message = statusMessage });
+        }
+
+        public async Task<IActionResult> ShowFile(int id)
+        {
+            TicketAttachment ticketAttachment = await _ticketService.GetTicketAttachmentByIdAsync(id);
+            string fileName = ticketAttachment.FileName;
+            byte[] fileData = ticketAttachment.FileData;
+            string ext = Path.GetExtension(fileName).Replace(".", "");
+
+            Response.Headers.Add("Content-Disposition", $"inline; filename={fileName}");
+            return File(fileData, $"application/{ext}");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddTicketComment([Bind("Id, TicketId, Comment")] TicketComment ticketComment)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    ticketComment.UserId = _userManager.GetUserId(User);
+                    ticketComment.Created = DateTimeOffset.Now;
+
+                    await _ticketService.AddTicketCommentAsync(ticketComment);
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+            }
+
+            return RedirectToAction("Details", new { id = ticketComment.TicketId });
         }
 
         // GET: Tickets/Archive/5
