@@ -77,7 +77,6 @@ namespace BugTracker.Services
             {
                 result = await _context.Companies.Include(c => c.Projects)
                                                  .Include(c => c.Members)
-                                                 .Include(c => c.Description)
                                                  .Include(c => c.Invites)
                                                  .FirstOrDefaultAsync(c => c.Id == companyId);
             }
