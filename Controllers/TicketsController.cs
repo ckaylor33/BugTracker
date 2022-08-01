@@ -148,7 +148,23 @@ namespace BugTracker.Controllers
         {
             if (model.DeveloperId != null)
             {
-                await _ticketService.AssignTicketAsync(model.Ticket.Id, model.DeveloperId);
+                BTUser btUser = await _userManager.GetUserAsync(User);
+                //Old Ticket
+                Ticket oldTicket = await _ticketService.GetTicketAsNoTrackingAsync(model.Ticket.Id);
+
+                try
+                {
+                    await _ticketService.AssignTicketAsync(model.Ticket.Id, model.DeveloperId);
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+                //New Ticket
+                Ticket newTicket = await _ticketService.GetTicketAsNoTrackingAsync(model.Ticket.Id);
+                await _historyService.AddHistoryAsync(oldTicket, newTicket, btUser.Id);
+
                 return RedirectToAction(nameof(Details), new { id = model.Ticket.Id });
             }
 
@@ -206,18 +222,28 @@ namespace BugTracker.Controllers
 
             if (ModelState.IsValid)
             {
+                try
+                {
+                    ticket.Created = DateTimeOffset.Now;
+                    ticket.OwnerUserId = btUser.Id;
+                    ticket.TicketStatusId = (await _ticketService.LookupTicketStatusIdAsync(nameof(BTTicketStatus.New))).Value;
 
-                ticket.Created = DateTimeOffset.Now;
-                ticket.OwnerUserId = btUser.Id;
-                ticket.TicketStatusId = (await _ticketService.LookupTicketStatusIdAsync(nameof(BTTicketStatus.New))).Value;
+                    await _ticketService.AddNewTicketAsync(ticket);
 
-                await _ticketService.AddNewTicketAsync(ticket);
+                    //TODO: Ticket History
+                    Ticket newTicket = await _ticketService.GetTicketAsNoTrackingAsync(ticket.Id);
+                    await _historyService.AddHistoryAsync(null, newTicket, btUser.Id);
 
-                //TODO: Ticket History
 
-                //TODO: Ticket Notification
+                    //TODO: Ticket Notification
+                }
+                catch (Exception)
+                {
 
-                return RedirectToAction(nameof(Index));
+                    throw;
+                }
+
+                return RedirectToAction(nameof(AllTickets));
             }
 
             if (User.IsInRole(nameof(Roles.Admin)))
@@ -309,14 +335,26 @@ namespace BugTracker.Controllers
 
             if (ModelState.IsValid && ticketAttachment.FormFile != null)
             {
-                ticketAttachment.FileData = await _fileService.ConvertFileToByteArrayAsync(ticketAttachment.FormFile);
-                ticketAttachment.FileName = ticketAttachment.FormFile.FileName;
-                ticketAttachment.FileContentType = ticketAttachment.FormFile.ContentType;
+                try
+                {
+                    ticketAttachment.FileData = await _fileService.ConvertFileToByteArrayAsync(ticketAttachment.FormFile);
+                    ticketAttachment.FileName = ticketAttachment.FormFile.FileName;
+                    ticketAttachment.FileContentType = ticketAttachment.FormFile.ContentType;
 
-                ticketAttachment.Created = DateTimeOffset.Now;
-                ticketAttachment.UserId = _userManager.GetUserId(User);
+                    ticketAttachment.Created = DateTimeOffset.Now;
+                    ticketAttachment.UserId = _userManager.GetUserId(User);
 
-                await _ticketService.AddTicketAttachmentAsync(ticketAttachment);
+                    await _ticketService.AddTicketAttachmentAsync(ticketAttachment);
+
+                    //Add history
+                    await _historyService.AddHistoryAsync(ticketAttachment.TicketId, nameof(TicketAttachment), ticketAttachment.UserId);
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+
                 statusMessage = "Success: New attachment added to Ticket.";
             }
             else
@@ -351,6 +389,9 @@ namespace BugTracker.Controllers
                     ticketComment.Created = DateTimeOffset.Now;
 
                     await _ticketService.AddTicketCommentAsync(ticketComment);
+
+                    //Add history
+                    await _historyService.AddHistoryAsync(ticketComment.TicketId, nameof(TicketComment), ticketComment.UserId);
                 }
                 catch (Exception)
                 {
