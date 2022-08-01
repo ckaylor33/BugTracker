@@ -12,12 +12,13 @@ using BugTracker.Extensions;
 using BugTracker.Models.ViewModels;
 using BugTracker.Models.Enums;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BugTracker.Controllers
 {
+    [Authorize]
     public class ProjectsController : Controller
     {
-        private readonly ApplicationDbContext _context;
         private readonly IBTRolesService _rolesService;
         private readonly IBTLookupService _lookupService;
         private readonly IBTFileService _fileService;
@@ -25,28 +26,19 @@ namespace BugTracker.Controllers
         private readonly UserManager<BTUser> _userManager;
         private readonly IBTCompanyInfoService _companyInfoService;
 
-        public ProjectsController(ApplicationDbContext context,
-                                  IBTRolesService rolesService,
+        public ProjectsController(IBTRolesService rolesService,
                                   IBTLookupService lookupService,
                                   IBTFileService fileService,
                                   IBTProjectService projectService,
                                   UserManager<BTUser> userManager,
                                   IBTCompanyInfoService companyInfoService)
         {
-            _context = context;
             _rolesService = rolesService;
             _lookupService = lookupService;
             _fileService = fileService;
             _projectService = projectService;
             _userManager = userManager;
             _companyInfoService = companyInfoService;
-        }
-
-        // GET: Projects
-        public async Task<IActionResult> Index()
-        {
-            var applicationDbContext = _context.Projects.Include(p => p.Company).Include(p => p.ProjectPriority);
-            return View(await applicationDbContext.ToListAsync());
         }
 
         // GET: MyProjects
@@ -92,6 +84,7 @@ namespace BugTracker.Controllers
         }
 
         //GET: UnassignedProjects
+        [Authorize(Roles = nameof(Roles.Admin))]
         public async Task<IActionResult> UnassignedProjects()
         {
             int companyId = User.Identity.GetCompanyId().Value;
@@ -105,6 +98,7 @@ namespace BugTracker.Controllers
 
         //GET: AssignMembers
         [HttpGet]
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> AssignMembers(int id)
         {
             ProjectMembersViewModel model = new();
@@ -125,6 +119,7 @@ namespace BugTracker.Controllers
         }
 
         //POST: AssignMembers
+        [Authorize(Roles = "Admin, ProjectManager")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AssignMembers(ProjectMembersViewModel model)
@@ -153,6 +148,7 @@ namespace BugTracker.Controllers
 
         //GET: AssignPM
         [HttpGet]
+        [Authorize(Roles = nameof(Roles.Admin))]
         public async Task<IActionResult> AssignPM(int? projectId)
         {
             int companyId = User.Identity.GetCompanyId().Value;
@@ -166,6 +162,7 @@ namespace BugTracker.Controllers
         }
 
         //POST: AssignPM
+        [Authorize(Roles = nameof(Roles.Admin))]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AssignPM(AssignPMViewModel model)
@@ -199,6 +196,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Projects/Create
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> Create()
         {
             //Get CompanyId - programmatically (not user selected)
@@ -220,6 +218,7 @@ namespace BugTracker.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize(Roles = "Admin, ProjectManager")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AddProjectWithPMViewModel model)
         {
@@ -252,13 +251,14 @@ namespace BugTracker.Controllers
                     throw;
                 }
                 //TODO: Redirect to All Projects
-                return RedirectToAction("Index");
+                return RedirectToAction(nameof(AllProjects));
             }
 
-            return RedirectToAction("Create");
+            return RedirectToAction(nameof(Create));
         }
 
         // GET: Projects/Edit/5
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> Edit(int? id)
         {
             //Get CompanyId - programmatically (not user selected)
@@ -282,6 +282,7 @@ namespace BugTracker.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
+        [Authorize(Roles = "Admin, ProjectManager")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(AddProjectWithPMViewModel model)
         {
@@ -304,18 +305,25 @@ namespace BugTracker.Controllers
                         await _projectService.AddProjectManagerAsync(model.PmId, model.Project.Id);
                     }
                 }
-                catch (Exception)
+                catch (DbUpdateConcurrencyException)
                 {
-
-                    throw;
+                    if (!await ProjectExists(model.Project.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
-                //TODO: Redirect to All Projects
-                return RedirectToAction("Index");
+
+                return RedirectToAction(nameof(AllProjects));
             }
-            return RedirectToAction("Edit");
+            return RedirectToAction(nameof(Edit), new { id = model.Project.Id });
         }
 
         // GET: Projects/Archive/5
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> Archive(int? id)
         {
             if (id == null)
@@ -336,6 +344,7 @@ namespace BugTracker.Controllers
 
         // POST: Projects/Archive/5
         [HttpPost, ActionName("Archive")]
+        [Authorize(Roles = "Admin, ProjectManager")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ArchiveConfirmed(int id)
         {
@@ -345,10 +354,11 @@ namespace BugTracker.Controllers
 
             await _projectService.ArchiveProjectAsync(project);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(AllProjects));
         }
 
         // GET: Projects/Restore/5
+        [Authorize(Roles = "Admin, ProjectManager")]
         public async Task<IActionResult> Restore(int? id)
         {
             if (id == null)
@@ -369,6 +379,7 @@ namespace BugTracker.Controllers
 
         // POST: Projects/Restore/5
         [HttpPost, ActionName("Restore")]
+        [Authorize(Roles = "Admin, ProjectManager")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> RestoreConfirmed(int id)
         {
@@ -378,12 +389,14 @@ namespace BugTracker.Controllers
 
             await _projectService.RestoreProjectAsync(project);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(AllProjects));
         }
 
-        private bool ProjectExists(int id)
+        private async Task<bool> ProjectExists(int id)
         {
-            return _context.Projects.Any(e => e.Id == id);
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            return (await _projectService.GetAllProjectsByCompanyAsync(companyId)).Any(p => p.Id == id);
         }
     }
 }
