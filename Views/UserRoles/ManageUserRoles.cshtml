@@ -1,36 +1,64 @@
 ﻿@model IEnumerable<BugTracker.Models.ViewModels.ManageUserRolesViewModel>
 
-<div class="row">
-  <h2 class="m-t-0 h3"><b>Manage Member Roles </b></h2>
-  @foreach (var member in Model)
-  {
-      <div class="row">
-      	<div class="card col-4 m-3">
-      	    <div class="card-body">
-      	    	<p class="text-muted font-13 m-b-30">
-      	    		This form displays the current roles assigned to the user: <strong class="text-info">@member.BTUser.FullName</strong>.
-      	    		Use the dropdown to select the roles this user should be assigned.
-      	    		Once roles are selected, click "Assign Roles" to submit the form.
-      	    	</p>
-      	    	<hr />
-      	    	<form asp-action="ManageUserRoles" asp-controller="UserRoles" method=post>   
-                      <input type="hidden" asp-for="@member.BTUser.Id" />
-                      <div class="row">
-                          <div class="col-6">
-                              <div class="form-group">
-                                  <label asp-for="@member.Roles" class="control-label">Roles for @member.BTUser.FullName</label>
-                                  <select asp-for="@member.SelectedRoles" class="form-control" asp-items="@member.Roles" multiple>
-                                  </select>
-                                  <hr/>
-                              </div>
-                              <div class="form-group">
-                                  <input type="submit" value="Assign Role" class="btn btn-info"/>
-                              </div>
-                          </div>
-                      </div>
-      	    	</form>
-      	    </div>
-      	</div>
-      </div>
-  }
+@{
+    ViewData["Title"] = "Manage Member Roles";
+}
+
+
+<h2 class="m-t-0 h3"><b>Manage Member Roles</b></h2>
+<div class="row gx-5 ">
+    <div class="col-lg-12 mb-5 mt-5">
+        <div class="card card-raised h-100">
+            <div class="card-header bg-primary text-white px-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="me-4">
+                        <h2 class="card-title text-white mb-0">Company Members</h2>
+                        <div class="card-subtitle">Manage Roles</div>
+                    </div>
+                    <hr />
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <table id="datatablesSimple">
+                    <thead>
+                        <tr>
+                            <th>Member Name</th>
+                            <th>Role</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var member in Model)
+                        {
+                            <tr>
+                                <td class="col-4">
+                                    <strong>@member.BTUser.FullName: </strong>
+                                </td>
+                                <td>
+                                    <form asp-action="ManageUserRoles" asp-controller="UserRoles" method=post>
+
+                                        <div class="col">
+                                            <input type="hidden" asp-for="@member.BTUser.Id" />
+                                            <select outlined asp-for="@member.SelectedRoles" class="form-floating w-75" asp-items="@member.Roles" multiple>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col mt-2">
+                                            <input type="submit" value="Assign Role" class="btn btn-outline-info btn-sm">
+                                        </div>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section scripts{
+
+    <!-- Load Simple DataTables Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
+    <script src="~/js/datatables/datatables-simple-demo.js"></script>
+
+}

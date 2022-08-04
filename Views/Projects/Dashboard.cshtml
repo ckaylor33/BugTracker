@@ -1,0 +1,255 @@
+﻿@model IEnumerable<BugTracker.Models.Project>
+
+@using BugTracker.Models.Enums
+@using BugTracker.Services.Interfaces
+@using Microsoft.AspNetCore.Identity
+
+@inject UserManager<BTUser> UserManager
+@inject IBTRolesService RolesService
+@inject IBTProjectService ProjectService
+
+@{
+    ViewData["Title"] = "Dashboard";
+    BTUser btUser = await UserManager.GetUserAsync(User);
+    List<Project> unassignedProjects = await ProjectService.GetUnassignedProjectsAsync(btUser.CompanyId);
+    List<Project> myProjects = await ProjectService.GetUserProjectsAsync(btUser.Id);
+}
+
+@if (User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
+{
+    <!-- Page Title -->
+    <div class="row justify-content-between align-items-center mb-5">
+        <div class="col flex-shrink-0 mb-5 mb-md-0">
+            <h1 class="display-4 mb-0">Projects Dashboard</h1>
+            <div class="text-muted">Manage and organise your projects:</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-6 col-md-6 mb-5">
+            <div class="card h-100 border-2 border-dashed ripple-primary">
+                <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                    <i class="material-icons text-primary mb-2">create_new_folder</i>
+                    <a class="stretched-link fst-button text-decoration-none d-inline-flex align-items-center" asp-area="" asp-controller="Projects" asp-action="Create">Create Project</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row gx-5">
+        <div class="col-xxl-3 col-md-6 mb-5">
+            <div class="card card-raised bg-secondary text-white h-100">
+                <div class="card-body px-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="me-2">
+                            <div class="display-5 text-white">@Model.Where(p => p.StartDate < DateTime.Now && p.EndDate > DateTime.Now && p.Archived == false).Count()</div>
+                            <div class="card-text">Active Projects</div>
+                        </div>
+                        <div class="icon-circle bg-white-50 text-secondary"><i class="material-icons">published_with_changes</i></div>
+                    </div>
+                    <div class="card-text">
+                        <div class="d-inline-flex align-items-center">
+                            <div class="d-inline-flex align-items-center">
+                                <a class="stretched-link text-decoration-none text-white" asp-area="" asp-controller="Projects" asp-action="ActiveProjects">Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xxl-3 col-md-6 mb-5">
+            <div class="card card-raised bg-info text-white h-100">
+                <div class="card-body px-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="me-2">
+                            <div class="display-5 text-white">@Model.Where(p => p.Archived == true).Count()</div>
+                            <div class="card-text">Archived Projects</div>
+                        </div>
+                        <div class="icon-circle bg-white-50 text-secondary"><i class="material-icons">folder</i></div>
+                    </div>
+                    <div class="card-text">
+                        <div class="d-inline-flex align-items-center">
+                            <a class="stretched-link text-decoration-none text-white" asp-area="" asp-controller="Projects" asp-action="ArchivedProjects">Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @if (User.IsInRole(nameof(Roles.Admin)))
+        {
+            <div class="col-xxl-3 col-md-6 mb-5">
+                <div class="card card-raised bg-warning text-white h-100">
+                    <div class="card-body px-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="me-2">
+                                <div class="display-5 text-white">@unassignedProjects.Count()</div>
+                                <div class="card-text">Unassigned Projects</div>
+                            </div>
+                            <div class="icon-circle bg-white-50 text-secondary"><i class="material-icons">rule</i></div>
+                        </div>
+                        <div class="card-text">
+                            <div class="d-inline-flex align-items-center">
+                                <div class="d-inline-flex align-items-center">
+                                    <a class="stretched-link text-decoration-none text-white" asp-area="" asp-controller="Projects" asp-action="UnassignedProjects">Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="col-xxl-3 col-md-6 mb-5">
+                <div class="card card-raised bg-warning text-white h-100">
+                    <div class="card-body px-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="me-2">
+                                <div class="display-5 text-white">@myProjects.Count()</div>
+                                <div class="card-text">My Projects</div>
+                            </div>
+                            <div class="icon-circle bg-white-50 text-secondary"><i class="material-icons">rule</i></div>
+                        </div>
+                        <div class="card-text">
+                            <div class="d-inline-flex align-items-center">
+                                <div class="d-inline-flex align-items-center">
+                                    <a class="stretched-link text-decoration-none text-white" asp-area="" asp-controller="Projects" asp-action="MyProjects">Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="col-xxl-3 col-md-6 mb-5">
+            <div class="card card-raised bg-info text-white h-100">
+                <div class="card-body px-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="me-2">
+                            <div class="display-5 text-white">@Model.Count()</div>
+                            <div class="card-text">Total Projects</div>
+                        </div>
+                        <div class="icon-circle bg-white-50 text-secondary"><i class="material-icons">functions</i></div>
+                    </div>
+                    <div class="card-text">
+                        <div class="d-inline-flex align-items-center">
+                            <div class="d-inline-flex align-items-center">
+                                <a class="stretched-link text-decoration-none text-white" asp-area="" asp-controller="Projects" asp-action="AllProjects">Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="card card-raised">
+        <div class="card-header bg-primary text-white px-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="me-4">
+                    <h2 class="card-title text-white mb-0">Projects</h2>
+                    <div class="card-subtitle">Details</div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-4">
+            <!-- Simple DataTables example-->
+            <table id="datatablesSimple">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Priority</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @* Table body *@
+                    @foreach (var project in Model.OrderByDescending(d => d.EndDate))
+                    {
+                        <tr>
+                            <td>@project.Name</td>
+                            <td>@project.Description</td>
+                            @if (project.Archived == true)
+                            {
+                                <td><span class="badge rounded-pill bg-light text-dark">Archived</span></td>
+                            }
+                            else if((project.StartDate < DateTime.Now && project.EndDate > DateTime.Now) && project.Archived == false)
+                            {
+                                <td><span class="bg-success badge rounded-pill">Active</span></td>
+                            } 
+                            else
+                            {
+                                <td><span class="bg-dark badge rounded-pill">Upcoming</span></td>
+                            }
+                            <td><span style="font-size: small">@project.StartDate.ToString("MM/dd/yyyy")</span></td>
+                            <td><span style="font-size: small">@project.EndDate.ToString("MM/dd/yyyy")</span></td>
+                            @if (project.ProjectPriority?.Name == nameof(BTProjectPriority.Urgent) || project.ProjectPriority?.Name == nameof(BTProjectPriority.High))
+                            {
+                                <td><span class="badge rounded-pill bg-danger">@project.ProjectPriority?.Name</span></td>
+                            }
+                            else
+                            {
+                                <td><span class="badge rounded-pill bg-success">@project.ProjectPriority?.Name</span></td>
+
+                            }
+                            <td>
+                                @{
+                                    bool isProjectPM = (await ProjectService.GetProjectManagerAsync(project.Id))?.Id == btUser.Id;
+                                }
+                                <div class="d-flex flex-column">
+                                    <a class="btn btn-sm btn-outline-info mb-1" asp-action="Details" asp-controller="Projects" asp-route-id="@project.Id">
+                                        <div class="fst-button">
+                                            View
+                                        </div>
+                                        <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                    </a>
+                                    @if (User.IsInRole(nameof(Roles.Admin)) || isProjectPM)
+                                    {
+                                        <a class="btn btn-sm btn-outline-info mb-1" asp-action="Edit" asp-controller="Projects" asp-route-id="@project.Id">
+                                            <div class="fst-button">
+                                                Edit
+                                            </div>
+                                            <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                        </a>
+                                        @if (project.Archived)
+                                        {
+                                            <a class="btn btn-sm btn-outline-info mb-1" asp-action="Restore" asp-controller="Projects" asp-route-id="@project.Id">
+                                                <div class="fst-button">
+                                                    Restore
+                                                </div>
+                                                <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <a class="btn btn-sm btn-outline-info mb-1" asp-action="Archive" asp-controller="Projects" asp-route-id="@project.Id">
+                                                <div class="fst-button">
+                                                    Archive
+                                                </div>
+                                                <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                            </a>
+                                        }
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+@section scripts {
+
+    <!-- Load Simple DataTables Scripts-->
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
+    <script src="~/js/datatables/datatables-simple-demo.js"></script>
+
+}

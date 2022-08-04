@@ -7,16 +7,25 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BugTracker.Data;
 using BugTracker.Models;
+using Microsoft.AspNetCore.Identity;
+using BugTracker.Extensions;
+using BugTracker.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using BugTracker.Models.Enums;
 
 namespace BugTracker.Controllers
 {
     public class CompaniesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<BTUser> _userManager;
+        private readonly IBTCompanyInfoService _companyInfoService;
 
-        public CompaniesController(ApplicationDbContext context) //constructor - how we instantiate a class
+        public CompaniesController(ApplicationDbContext context, UserManager<BTUser> userManager, IBTCompanyInfoService companyInfoService) //constructor - how we instantiate a class
         {
             _context = context;
+            _userManager = userManager;
+            _companyInfoService = companyInfoService;
         }
 
         // GET: Companies
@@ -26,15 +35,18 @@ namespace BugTracker.Controllers
         }
 
         // GET: Companies/Details/5
+        [HttpGet]
         public async Task<IActionResult> Details(int? id) //actions are what provide the user a view
         {
+            int companyId = User.Identity.GetCompanyId().Value;
+
             if (id == null)
             {
                 return NotFound();
             }
 
-            var company = await _context.Companies
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var company = await _companyInfoService.GetCompanyInfoByIdAsync(companyId);
+
             if (company == null)
             {
                 return NotFound();
@@ -66,6 +78,7 @@ namespace BugTracker.Controllers
         }
 
         // GET: Companies/Edit/5
+        [Authorize(Roles = nameof(Roles.Admin))]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -113,7 +126,7 @@ namespace BugTracker.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Details), new {id = company.Id});
             }
             return View(company);
         }

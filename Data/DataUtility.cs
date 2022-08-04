@@ -112,6 +112,7 @@ namespace BugTracker.Data
                 company3Id = context.Companies.FirstOrDefault(p => p.Name == "Company3").Id;
                 company4Id = context.Companies.FirstOrDefault(p => p.Name == "Company4").Id;
                 company5Id = context.Companies.FirstOrDefault(p => p.Name == "Company5").Id;
+
             }
             catch (Exception ex)
             {
@@ -165,7 +166,7 @@ namespace BugTracker.Data
                      {
                          CompanyId = company1Id,
                          Name = "Build a Personal Porfolio",
-                         Description="Single page html, css & javascript page.  Serves as a landing page for candidates and contains a bio and links to all applications and challenges.",
+                         Description="Single page html, css & javascript page. Serves as a landing page for candidates and contains a bio and links to all applications and challenges.",
                          StartDate = new DateTime(2022,8,20),
                          EndDate = new DateTime(2022,8,20).AddMonths(1),
                          ProjectPriorityId = priorityLow

@@ -41,6 +41,26 @@ namespace BugTracker.Controllers
             _companyInfoService = companyInfoService;
         }
 
+        //GET: DashBoard
+        [HttpGet]
+        public async Task<IActionResult> Dashboard()
+        {
+            List<Project> projects = new();
+
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            if (User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
+            {
+                projects = await _companyInfoService.GetAllProjectsAsync(companyId);
+            }
+            else
+            {
+                projects = await _projectService.GetAllProjectsByCompanyAsync(companyId);
+            }
+
+            return View(projects);
+        }
+
         // GET: MyProjects
         public async Task<IActionResult> MyProjects()
         {
@@ -79,6 +99,18 @@ namespace BugTracker.Controllers
             int companyId = User.Identity.GetCompanyId().Value;
 
             List<Project> projects = await _projectService.GetArchivedProjectsByCompanyAsync(companyId);
+
+            return View(projects);
+        }
+
+
+        //GET: ActiveProjects
+        [HttpGet]
+        public async Task<IActionResult> ActiveProjects()
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            List<Project> projects = (await _projectService.GetAllProjectsByCompanyAsync(companyId)).Where(p => p.StartDate < DateTime.Now && p.EndDate > DateTime.Now).ToList();
 
             return View(projects);
         }

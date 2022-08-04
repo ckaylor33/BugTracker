@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\ChartModels\**" />
     <Compile Remove="Views\ProjectPriorities\**" />
     <Compile Remove="Views\TicketAttachments\**" />
     <Compile Remove="Views\TicketComments\**" />
@@ -14,6 +15,7 @@
     <Compile Remove="Views\TicketPriorities\**" />
     <Compile Remove="Views\TicketStatus\**" />
     <Compile Remove="Views\TicketTypes\**" />
+    <Content Remove="Models\ChartModels\**" />
     <Content Remove="Views\ProjectPriorities\**" />
     <Content Remove="Views\TicketAttachments\**" />
     <Content Remove="Views\TicketComments\**" />
@@ -21,6 +23,7 @@
     <Content Remove="Views\TicketPriorities\**" />
     <Content Remove="Views\TicketStatus\**" />
     <Content Remove="Views\TicketTypes\**" />
+    <EmbeddedResource Remove="Models\ChartModels\**" />
     <EmbeddedResource Remove="Views\ProjectPriorities\**" />
     <EmbeddedResource Remove="Views\TicketAttachments\**" />
     <EmbeddedResource Remove="Views\TicketComments\**" />
@@ -28,6 +31,7 @@
     <EmbeddedResource Remove="Views\TicketPriorities\**" />
     <EmbeddedResource Remove="Views\TicketStatus\**" />
     <EmbeddedResource Remove="Views\TicketTypes\**" />
+    <None Remove="Models\ChartModels\**" />
     <None Remove="Views\ProjectPriorities\**" />
     <None Remove="Views\TicketAttachments\**" />
     <None Remove="Views\TicketComments\**" />
@@ -45,6 +49,17 @@
     <Compile Remove="Controllers\TicketPrioritiesController.cs" />
     <Compile Remove="Controllers\TicketStatusController.cs" />
     <Compile Remove="Controllers\TicketTypesController.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Views\app-account-profile.cshtml" />
+    <Content Remove="Views\Home\plugins-charts.cshtml" />
+    <Content Remove="Views\Projects\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Views\app-account-profile.cshtml" />
+    <None Include="Views\Home\plugins-charts.cshtml" />
   </ItemGroup>
 
   <ItemGroup>

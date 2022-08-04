@@ -1,105 +1,271 @@
-﻿@using Microsoft.AspNetCore.Identity
+﻿@using BugTracker.Extensions
 @using BugTracker.Models.Enums
-@inject SignInManager<BTUser> SignInManager
+@using BugTracker.Services.Interfaces
+@using Microsoft.AspNetCore.Identity
 
+@inject SignInManager<BTUser> SignInManager
+@inject UserManager<BTUser> UserManager
+@inject IBTCompanyInfoService CompanyService
+@inject IBTRolesService RolesService
+
+@{
+    BTUser btUser = await UserManager.GetUserAsync(User);
+    Company company = await CompanyService.GetCompanyInfoByIdAsync(btUser.CompanyId);
+}
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - TheBugTracker</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <title>@ViewData["Title"] - BugTracker</title>
+
+    <!-- Load Material Icons from Google Fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet" />
+    <!-- Roboto and Roboto Mono fonts from Google Fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500" rel="stylesheet" />
+    <!-- Load main stylesheet-->
+    <link href="~/css/styles.css" rel="stylesheet" />
+
+
+    @*    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">*@
+    @*<link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />*@
+    @*    <link href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" rel="stylesheet" />*@
+    @*    <link href="~/css/styles.css" rel="stylesheet">
+    <script src="https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>*@
 </head>
-<body>
-    <div class="container-fluid overflow-hidden">
-        <div class="row vh-100 overflow-auto">
-            <div class="col-12 col-sm-3 col-xl-2 px-sm-2 px-0 bg-dark d-flex sticky-top">
-                <div class="d-flex flex-sm-column flex-row flex-grow-1 align-items-center align-items-sm-start px-3 pt-2 text-white">
-                    <a href="/" class="d-flex align-items-center pb-sm-3 mb-md-0 me-md-auto text-white text-decoration-none">
-                        <span class="fs-5"><span class="d-none d-sm-inline">BugTracker</span></span>
-                    </a>
-                    <partial name="_LoginPartial" />
 
-                    @if (SignInManager.IsSignedIn(User))
-                    {
-                        <ul class="nav nav-pills flex-sm-column flex-row flex-nowrap flex-shrink-1 flex-sm-grow-0 flex-grow-1 mb-sm-auto mb-0 justify-content-center align-items-center align-items-sm-start" id="menu">
-                            <li class="nav-item">
-                                <a asp-area="" asp-controller="Home" asp-action="Index" class="nav-link px-sm-0 px-2">
-                                    <i class="fs-5 bi-house"></i><span class="ms-1 d-none d-sm-inline">Home</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a asp-area="" asp-controller="Companies" asp-action="Index" class="nav-link px-sm-0 px-2">
-                                    <i class="fs-5 bi-building"></i><span class="ms-1 d-none d-sm-inline">Company</span>
-                                </a>
-                            </li>
-                            <li class="dropdown">
-                                <a asp-area="" asp-controller="Projects" asp-action="Index" class="nav-link dropdown-toggle px-sm-0 px-2" id="dropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fs-5 bi-file-earmark-ppt"></i><span class="ms-1 d-none d-sm-inline">Projects</span>
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdown">
-                                    @if (User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
-                                    {
-                                        <li><a class="dropdown-item" asp-area="" asp-controller="Projects" asp-action="Create">New project...</a></li>
-                                    }
-                                    @if (!User.IsInRole(nameof(Roles.Admin)))
-                                    {
-                                        <li><a class="dropdown-item" asp-area="" asp-controller="Projects" asp-action="MyProjects">My Projects</a></li>
-                                    }
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Projects" asp-action="AllProjects">All Projects</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Projects" asp-action="ArchivedProjects">Archived Projects</a></li>
-                                    @if (User.IsInRole(nameof(Roles.Admin)))
-                                    {
-                                        <li><a class="dropdown-item" asp-area="" asp-controller="Projects" asp-action="UnassignedProjects">Unassigned Projects</a></li>
+<body class="nav-fixed bg-light">
+    <!-- Top app bar navigation menu-->
+    <nav class="top-app-bar navbar navbar-expand navbar-dark bg-dark">
+        <div class="container-fluid px-4">
+            <!-- Drawer toggle button-->
+            <button class="btn btn-lg btn-icon order-1 order-lg-0" id="drawerToggle" href="javascript:void(0);"><i class="material-icons">menu</i></button>
+            <!-- Navbar brand-->
+            <a class="navbar-brand me-auto" href="#"><div class="text-uppercase font-monospace">@company.Name</div></a>
+            <!-- Navbar items-->
+            <partial name="_LoginPartial" />
+        </div>
+    </nav>
+    <!-- Layout wrapper-->
+    <div id="layoutDrawer">
+        <!-- Layout navigation-->
+        <div id="layoutDrawer_nav">
+            <!-- Drawer navigation-->
+            <nav class="drawer accordion drawer-light bg-white" id="drawerAccordion">
+                <div class="drawer-menu">
+                    <div class="nav">
+                        <!-- Drawer section heading (Account)-->
+                        <div class="drawer-menu-heading d-sm-none">Account</div>
+                        <!-- Drawer link (Notifications)-->
+                        <a class="nav-link d-sm-none" href="#!">
+                            <div class="nav-link-icon"><i class="material-icons">notifications</i></div>
+                            Notifications
+                        </a>
+                        <!-- Drawer link (Messages)-->
+                        <a class="nav-link d-sm-none" href="#!">
+                            <div class="nav-link-icon"><i class="material-icons">mail</i></div>
+                            Messages
+                        </a>
+                        <!-- Divider-->
+                        <div class="drawer-menu-divider d-sm-none"></div>
+                        <!-- Drawer section heading (Company)-->
+                        <div class="drawer-menu-heading">Company</div>
+                        <!-- Drawer link (Home)-->
+                        <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Dashboard">
+                            <div class="nav-link-icon"><i class="material-icons">home</i></div>
+                            Home
+                        </a>
+                        <!-- Drawer link (Projects)-->
+                        <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseProjects" aria-expanded="false" aria-controls="collapseDashboards">
+                            <div class="nav-link-icon"><i class="material-icons">inventory</i></div>
+                            Projects
+                            <div class="drawer-collapse-arrow"><i class="material-icons">expand_more</i></div>
+                        </a>
+                        <!-- Nested drawer nav (Project Links)-->
+                        <div class="collapse" id="collapseProjects" aria-labelledby="headingOne" data-bs-parent="#drawerAccordion">
+                            <nav class="drawer-menu-nested nav">
+                                @if (User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
+                                {
+                                    <a class="nav-link" asp-area="" asp-controller="Projects" asp-action="Dashboard">Projects Dashboard</a>
+                                }
+                                @if (User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
+                                {
+                                    <a class="nav-link" asp-area="" asp-controller="Projects" asp-action="Create">New project...</a>
+                                }
+                                @if (!User.IsInRole(nameof(Roles.Admin)))
+                                {
+                                    <a class="nav-link" asp-area="" asp-controller="Projects" asp-action="MyProjects">My Projects</a>
+                                }
+                                <a class="nav-link" asp-area="" asp-controller="Projects" asp-action="AllProjects">All Projects</a>
+                                <a class="nav-link" asp-area="" asp-controller="Projects" asp-action="ArchivedProjects">Archived Projects</a>
+                                @if (User.IsInRole(nameof(Roles.Admin)))
+                                {
+                                    <a class="nav-link" asp-area="" asp-controller="Projects" asp-action="UnassignedProjects">Unassigned Projects</a>
+                                }
+                            </nav>
+                        </div>
 
-                                    }
-                                </ul>
-                            </li>
-                            <li class="dropdown">
-                                <a asp-area="" asp-controller="Tickets" asp-action="Index" class="nav-link dropdown-toggle px-sm-0 px-2" id="dropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fs-5 bi-file-earmark-font"></i><span class="ms-1 d-none d-sm-inline">Tickets</span>
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdown">
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Tickets" asp-action="Create">New ticket...</a></li>
-                                    @if (!User.IsInRole(nameof(Roles.Admin)))
-                                    {
-                                        <li><a class="dropdown-item" asp-area="" asp-controller="Tickets" asp-action="MyTickets">My Tickets</a></li>
-                                    }
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Tickets" asp-action="AllTickets">All Tickets</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Tickets" asp-action="ArchivedTickets">Archived Tickets</a></li>
-                                    @if (User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
-                                    {
-                                        <li><a class="dropdown-item" asp-area="" asp-controller="Tickets" asp-action="UnassignedTickets">Unassigned Tickets</a></li>
-                                    }
+                        <!-- Drawer link (Tickets)-->
+                        <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseTickets" aria-expanded="false" aria-controls="collapseDashboards">
+                            <div class="nav-link-icon"><i class="material-icons">local_activity</i></div>
+                            Tickets
+                            <div class="drawer-collapse-arrow"><i class="material-icons">expand_more</i></div>
+                        </a>
+                        <!-- Nested drawer nav (Ticket Links)-->
+                        <div class="collapse" id="collapseTickets" aria-labelledby="headingOne" data-bs-parent="#drawerAccordion">
+                            <nav class="drawer-menu-nested nav">
+                                <a class="nav-link" href="#">Tickets Dashboard</a>
+                                <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="Create">New ticket...</a>
+                                @if (!User.IsInRole(nameof(Roles.Admin)))
+                                {
+                                    <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="MyTickets">My Tickets</a>
+                                }
+                                <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="AllTickets">All Tickets</a>
+                                <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="ArchivedTickets">Archived Tickets</a>
+                                @if (User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
+                                {
+                                    <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="UnassignedTickets">Unassigned Tickets</a>
+                                }
+                            </nav>
+                        </div>
 
-                                </ul>
-                            </li>
-                            <li>
-                                <a asp-area="" asp-controller="Notifications" asp-action="Index" class="nav-link px-sm-0 px-2">
-                                    <i class="fs-5 bi-mailbox2"></i><span class="ms-1 d-none d-sm-inline">Notifications</span>
-                                </a>
-                            </li>
-                        </ul>
-                    }
-                </div>
-            </div>
-            <div class="col d-flex flex-column h-100">
-                <main class="row">
-                    @RenderBody()
-                </main>
-                <footer class="row bg-light py-4 mt-auto">
-                    <div class="container">
-                        &copy; 2021 - TheBugTracker - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        @if (User.IsInRole(nameof(Roles.Admin)))
+                        {
+                            <!-- Drawer link (Admin) -->
+                            <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseAdmin" aria-expanded="false" aria-controls="collapseDashboards">
+                                <div class="nav-link-icon"><i class="material-icons">verified</i></div>
+                                Admin
+                                <div class="drawer-collapse-arrow"><i class="material-icons">expand_more</i></div>
+                            </a>
+                            <!-- Nested drawer nav (Admin Links)-->
+                            <div class="collapse" id="collapseAdmin" aria-labelledby="headingOne" data-bs-parent="#drawerAccordion">
+                                <nav class="drawer-menu-nested nav">
+                                    <a class="nav-link" href="#"><span class="material-icons me-2">person_add</span> Company Invite</a>
+                                    <a class="nav-link" asp-action="ManageUserRoles" asp-controller="UserRoles"><span class="material-icons me-2">person</span> Manage Roles</a>
+                                    <a class="nav-link" asp-action="Details" asp-controller="Companies" asp-route-id="@company.Id">Company Details</a>
+                                    <a class="nav-link" asp-area="" asp-controller="Projects" asp-action="UnassignedProjects">Assign Project Manager</a>
+                                    <a class="nav-link" asp-area="" asp-controller="Projects" asp-action="AllProjects">Manage Projects</a>
+                                    <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="Create">Create Tickets</a>
+                                    <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="UnassignedTickets">Assign Tickets</a>
+                                    <a class="nav-link" href="#">Member Profiles</a>
+                                </nav>
+                            </div>
+                        }
+
+                        @if (User.IsInRole(nameof(Roles.ProjectManager)))
+                        {
+                            <!-- Drawer link (PM) -->
+                            <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseAdmin" aria-expanded="false" aria-controls="collapseDashboards">
+                                <div class="nav-link-icon"><i class="material-icons">verified</i></div>
+                                Project Manager
+                                <div class="drawer-collapse-arrow"><i class="material-icons">expand_more</i></div>
+                            </a>
+                            <!-- Nested drawer nav (PM Links)-->
+                            <div class="collapse" id="collapseAdmin" aria-labelledby="headingOne" data-bs-parent="#drawerAccordion">
+                                <nav class="drawer-menu-nested nav">
+                                    <a class="nav-link" asp-action="Details" asp-controller="Companies" asp-route-id="@company.Id">Company Details</a>
+                                    <a class="nav-link" asp-area="" asp-controller="Projects" asp-action="MyProjects">Manage Projects</a>
+                                    <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="UnassignedTickets">Assign Tickets</a>
+                                    <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="Create">Create Tickets</a>
+                                    <a class="nav-link" href="#">Member Profiles</a>
+                                </nav>
+                            </div>
+                        }
+
+                        @if (User.IsInRole(nameof(Roles.Developer)))
+                        {
+                            <!-- Drawer link (Dev) -->
+                            <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseAdmin" aria-expanded="false" aria-controls="collapseDashboards">
+                                <div class="nav-link-icon"><i class="material-icons">verified</i></div>
+                                Developer
+                                <div class="drawer-collapse-arrow"><i class="material-icons">expand_more</i></div>
+                            </a>
+                            <!-- Nested drawer nav (Dev Links) -->
+                            <div class="collapse" id="collapseAdmin" aria-labelledby="headingOne" data-bs-parent="#drawerAccordion">
+                                <nav class="drawer-menu-nested nav">
+                                    <a class="nav-link" asp-action="Details" asp-controller="Companies" asp-route-id="@company.Id">Company Details</a>
+                                    <a class="nav-link" asp-area="" asp-controller="Projects" asp-action="MyProjects">My Projects</a>
+                                    <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="Create">Create Ticket</a>
+                                    <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="MyTickets">My Tickets</a>
+                                    <a class="nav-link" href="#">Member Profiles</a>
+                                </nav>
+                            </div>
+                        }
+
+                        @if (User.IsInRole(nameof(Roles.Submitter)))
+                        {
+                            <!-- Drawer link (Sub) -->
+                            <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseAdmin" aria-expanded="false" aria-controls="collapseDashboards">
+                                <div class="nav-link-icon"><i class="material-icons">verified</i></div>
+                                Submitter
+                                <div class="drawer-collapse-arrow"><i class="material-icons">expand_more</i></div>
+                            </a>
+                            <!-- Nested drawer nav (Sub Links) -->
+                            <div class="collapse" id="collapseAdmin" aria-labelledby="headingOne" data-bs-parent="#drawerAccordion">
+                                <nav class="drawer-menu-nested nav">
+                                    <a class="nav-link" asp-action="Details" asp-controller="Companies" asp-route-id="@company.Id">Company Details</a>
+                                    <a class="nav-link" asp-area="" asp-controller="Projects" asp-action="AllProjects">All Projects</a>
+                                    <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="Create">Create Ticket</a>
+                                    <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="MyTickets">My Tickets</a>
+                                    <a class="nav-link" href="#">Member Profiles</a>
+                                </nav>
+                            </div>
+                        }
+
+                        <!-- Divider-->
+                        <div class="drawer-menu-divider"></div>
                     </div>
-                </footer>
-            </div>
+                </div>
+                <!-- Drawer footer        -->
+                <div class="drawer-footer border-top">
+                    <div class="d-flex align-items-center">
+                        <i class="material-icons text-muted">account_circle</i>
+                        <div class="ms-3">
+                            <div class="caption">Logged in as:</div>
+                            <div class="small fw-500">@btUser.FirstName: @((await RolesService.GetUserRolesAsync(btUser)).FirstOrDefault())</div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        <!-- Layout content-->
+        <div id="layoutDrawer_content">
+            <!-- Main page content-->
+            <main>
+                <div class="container-xl p-5">
+                    @RenderBody()
+                </div>
+            </main>
+            <!-- Footer-->
+            <!-- Min-height is set inline to match the height of the drawer footer-->
+            <footer class="py-4 mt-auto border-top" style="min-height: 74px">
+                <div class="container-xl px-5">
+                    <div class="d-flex flex-column flex-sm-row align-items-center justify-content-sm-between small">
+                        <div class="me-sm-2">Copyright &copy; <a href="https://charliekaylor.com" target="_blank">charliekaylor.com</a> @DateTimeOffset.Now.Year</div>
+                        <div class="d-flex ms-sm-2">
+                            @*                            <a class="text-decoration-none" href="#!">Privacy Policy</a>
+                            <div class="mx-1">&middot;</div>
+                            <a class="text-decoration-none" href="#!">Terms &amp; Conditions</a>*@
+                        </div>
+                    </div>
+                </div>
+            </footer>
         </div>
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-/bQdsTh/da6pkI1MST/rWKFNjaCP5gBSY4sEBT38Q/9RBh9AH40zEOg7Hlq2THRZ" crossorigin="anonymous"></script>
+    <!-- Load Bootstrap JS bundle-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <!-- Load global scripts-->
+    <script type="module" src="~/js/material.js"></script>
+    <script src="~/js/scripts.js"></script>
+    <!-- Load Prism plugin scripts-->
+    <script src="~/js/prism.js"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
+
 </html>

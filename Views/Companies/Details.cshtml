@@ -1,7 +1,14 @@
 ﻿@model BugTracker.Models.Company
+@using Microsoft.AspNetCore.Identity
+@using BugTracker.Extensions
+@using BugTracker.Models.Enums
+
+@inject UserManager<BTUser> UserManager
 
 @{
     ViewData["Title"] = "Details";
+    BTUser btUser = await UserManager.GetUserAsync(User);
+    int companyId = User.Identity.GetCompanyId().Value;
 }
 
 <h1>Details</h1>
@@ -10,21 +17,24 @@
     <h4>Company</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Name)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Name)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Description)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Description)
         </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    @if (User.IsInRole(nameof(Roles.Admin)))
+    {
+        <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+    }
+    <a asp-action="Dashboard" asp-controller="Home">Home</a>
 </div>
