@@ -1,34 +1,64 @@
 ﻿@model BugTracker.Models.ViewModels.AssignPMViewModel
+@using BugTracker.Models.Enums
+@using Microsoft.AspNetCore.Identity
 
 @{
     ViewData["Title"] = "Assign PM";
+
 }
 
-<h1>Project: @Model.Project.Name</h1>
-
-<h4>Assign Project Manager</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post" asp-action="AssignPM" asp-controller="Projects">
-            <input type="hidden" asp-for="Project.Id" />
-
-            <h2>@Model.Project.Name</h2>
-            <p>@Model.Project.Description</p>
-
-            <div class="form-group">
-                <label class="control-label">Select Project Manager</label>
-                <select asp-for="PMID" asp-items="@Model.PMList" class="form-control">
-                    <option></option>
-                </select>
-
-                <input type="submit" value="Assign" class="btn btn-primary" />
-            </div>
-
-        </form>
+@if (User.IsInRole(nameof(Roles.Admin)))
+{
+    <!-- Page Title -->
+    <div class="row justify-content-between align-items-center mb-3">
+        <div class="col flex-shrink-0 mb-5 mb-md-0">
+            <h1 class="">Assign a Project Manager for:</h1>
+            <h4 class="text-muted">@Model.Project.Name</h4>
+        </div>
     </div>
-</div>
 
-<div>
-    <a asp-action="UnassignedProjects">Back to List</a>
-</div>
+    <hr />
+
+
+    <!-- Main page content-->
+    <main>
+        <!-- Profile content row-->
+        <div class="row gx-5">
+            <div class="col-12">
+                <!-- Account details card-->
+                <div class="card card-raised mb-5">
+                    <div class="card-header bg-primary text-white px-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="me-4">
+                                <div class="card-title">Project: @Model.Project.Name</div>
+                                <div class="card-subtitle">Assign a Project Manager</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-5">
+                        <form asp-action="AssignPM" enctype="multipart/form-data" method="post">
+                            <input type="hidden" asp-for="Project.Id" />
+
+                            <div class="mb-3 form-floating">
+                                <select asp-for="PMID" asp-items="@Model.PMList" class="form-control">
+                                    <option>Select a Project Manager</option>
+                                </select>
+                                <label class="control-label">Project Manager</label>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="submit" value="Assign" class="btn btn-outline-info" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <div>
+        <a asp-action="UnassignedProjects" class="btn btn-outline-info">Back to List</a>
+    </div>
+
+}

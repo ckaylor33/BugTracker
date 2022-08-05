@@ -116,7 +116,7 @@
                         <!-- Nested drawer nav (Ticket Links)-->
                         <div class="collapse" id="collapseTickets" aria-labelledby="headingOne" data-bs-parent="#drawerAccordion">
                             <nav class="drawer-menu-nested nav">
-                                <a class="nav-link" href="#">Tickets Dashboard</a>
+                                <a class="nav-link" asp-controller="Tickets" asp-action="Dashboard">Tickets Dashboard</a>
                                 <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="Create">New ticket...</a>
                                 @if (!User.IsInRole(nameof(Roles.Admin)))
                                 {

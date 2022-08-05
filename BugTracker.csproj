@@ -55,6 +55,7 @@
     <Content Remove="Views\app-account-profile.cshtml" />
     <Content Remove="Views\Home\plugins-charts.cshtml" />
     <Content Remove="Views\Projects\Index.cshtml" />
+    <Content Remove="Views\Tickets\Index.cshtml" />
   </ItemGroup>
 
   <ItemGroup>

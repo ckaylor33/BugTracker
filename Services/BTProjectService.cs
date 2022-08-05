@@ -237,6 +237,7 @@ namespace BugTracker.Services
             try
             {
                 Project project = await _context.Projects
+                                                .Include(p => p.Company)
                                                 .Include(p => p.Tickets)
                                                     .ThenInclude(t => t.TicketPriority)
                                                 .Include(p => p.Tickets)

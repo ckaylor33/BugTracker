@@ -1,0 +1,261 @@
+﻿@model IEnumerable<BugTracker.Models.Ticket>
+@using BugTracker.Models.Enums
+@using BugTracker.Services.Interfaces
+@using Microsoft.AspNetCore.Identity
+@using BugTracker.Extensions
+
+@inject UserManager<BTUser> UserManager
+@inject IBTRolesService RolesService
+@inject IBTProjectService ProjectService
+@inject IBTTicketService TicketService
+
+@{
+    ViewData["Title"] = "Dashboard";
+    int companyId = User.Identity.GetCompanyId().Value;
+    BTUser btUser = await UserManager.GetUserAsync(User);
+    List<Ticket> unassignedTickets = (await TicketService.GetUnassignedTicketsAsync(companyId)).Where(t => t.Archived == false || t.ArchivedByProject == false).ToList();
+    List<Ticket> myTickets = await TicketService.GetTicketsByUserIdAsync(btUser.Id, companyId);
+}
+
+
+<!-- Page Title -->
+<div class="row justify-content-between align-items-center mb-5">
+    <div class="col flex-shrink-0 mb-5 mb-md-0">
+        <h1 class="display-4 mb-0">Tickets Dashboard</h1>
+        <div class="text-muted">Manage and organise your tickets:</div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-6 col-md-6 mb-5">
+        <div class="card h-100 border-2 border-dashed ripple-primary">
+            <div class="card-body d-flex flex-column align-items-center justify-content-center">
+                <i class="material-icons text-primary mb-2">create_new_folder</i>
+                <a class="stretched-link fst-button text-decoration-none d-inline-flex align-items-center" asp-area="" asp-controller="Tickets" asp-action="Create">Create Ticket</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row gx-5">
+    <div class="col-xxl-3 col-md-6 mb-5">
+        <div class="card card-raised bg-secondary text-white h-100">
+            <div class="card-body px-4">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="me-2">
+                        <div class="display-5 text-white">@Model.Where(p => p.Archived == false && p.ArchivedByProject == false).Count()</div>
+                        <div class="card-text">Active Tickets</div>
+                    </div>
+                    <div class="icon-circle bg-white-50 text-secondary"><i class="material-icons">published_with_changes</i></div>
+                </div>
+                <div class="card-text">
+                    <div class="d-inline-flex align-items-center">
+                        <div class="d-inline-flex align-items-center">
+                            <!--TODO: Create Active Tickets View-->
+                            <a class="stretched-link text-decoration-none text-white" asp-area="" asp-controller="Tickets" asp-action="ActiveTickets">Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xxl-3 col-md-6 mb-5">
+        <div class="card card-raised bg-info text-white h-100">
+            <div class="card-body px-4">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="me-2">
+                        <div class="display-5 text-white">@Model.Where(p => p.Archived == true || p.ArchivedByProject).Count()</div>
+                        <div class="card-text">Archived Tickets</div>
+                    </div>
+                    <div class="icon-circle bg-white-50 text-secondary"><i class="material-icons">folder</i></div>
+                </div>
+                <div class="card-text">
+                    <div class="d-inline-flex align-items-center">
+                        <a class="stretched-link text-decoration-none text-white" asp-area="" asp-controller="Tickets" asp-action="ArchivedTickets">Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if (User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
+    {
+        <div class="col-xxl-3 col-md-6 mb-5">
+            <div class="card card-raised bg-warning text-white h-100">
+                <div class="card-body px-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="me-2">
+                            <div class="display-5 text-white">@unassignedTickets.Count()</div>
+                            <div class="card-text">Unassigned Tickets</div>
+                        </div>
+                        <div class="icon-circle bg-white-50 text-secondary"><i class="material-icons">rule</i></div>
+                    </div>
+                    <div class="card-text">
+                        <div class="d-inline-flex align-items-center">
+                            <div class="d-inline-flex align-items-center">
+                                <a class="stretched-link text-decoration-none text-white" asp-area="" asp-controller="Tickets" asp-action="UnassignedTickets">Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="col-xxl-3 col-md-6 mb-5">
+            <div class="card card-raised bg-warning text-white h-100">
+                <div class="card-body px-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="me-2">
+                            <div class="display-5 text-white">@myTickets.Count()</div>
+                            <div class="card-text">My Tickets</div>
+                        </div>
+                        <div class="icon-circle bg-white-50 text-secondary"><i class="material-icons">rule</i></div>
+                    </div>
+                    <div class="card-text">
+                        <div class="d-inline-flex align-items-center">
+                            <div class="d-inline-flex align-items-center">
+                                <a class="stretched-link text-decoration-none text-white" asp-area="" asp-controller="Tickets" asp-action="MyTickets">Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="col-xxl-3 col-md-6 mb-5">
+        <div class="card card-raised bg-info text-white h-100">
+            <div class="card-body px-4">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div class="me-2">
+                        <div class="display-5 text-white">@Model.Count()</div>
+                        <div class="card-text">Total Tickets</div>
+                    </div>
+                    <div class="icon-circle bg-white-50 text-secondary"><i class="material-icons">functions</i></div>
+                </div>
+                <div class="card-text">
+                    <div class="d-inline-flex align-items-center">
+                        <div class="d-inline-flex align-items-center">
+                            <a class="stretched-link text-decoration-none text-white" asp-area="" asp-controller="Tickets" asp-action="Alltickets">Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Table -->
+<div class="card card-raised">
+    <div class="card-header bg-primary text-white px-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="me-4">
+                <h2 class="card-title text-white mb-0">Tickets</h2>
+                <div class="card-subtitle">Details</div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-4">
+        <!-- Simple DataTables example-->
+        <table id="datatablesSimple" style="width:100%;">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Project</th>
+                    <th>Ticket Type</th>
+                    <th>Ticket Status</th>
+                    <th>Ticket Priority</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @* Table body *@
+                @foreach (var item in Model.OrderByDescending(d => d.Created))
+                {
+                    <tr>
+                        <td>
+                            <strong>
+                                @Html.DisplayFor(modelItem => item.Title)
+                            </strong>
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Description)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Project.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TicketType.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TicketStatus.Name)
+                        </td>
+                        @if (item.TicketPriority.Name == nameof(BTTicketPriority.High) || item.TicketPriority.Name == nameof(BTTicketPriority.Urgent))
+                        {
+                            <td>
+                                <span class="badge bg-danger rounded-pill">@item.TicketPriority.Name</span>
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                <span class="badge bg-success rounded-pill">@item.TicketPriority.Name</span>
+                            </td>
+                        }
+                        <td>
+                            <div class="row mx-3">
+                                <a class="btn btn-sm btn-outline-info mb-1 flex-row justify-content-center" asp-action="Details" asp-controller="Tickets" asp-route-id="@item.Id">
+                                    <div class="fst-button">
+                                        Details
+                                    </div>
+                                    <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                </a>
+                                @if (User.IsInRole(nameof(Roles.Admin)) || item.DeveloperUserId == btUser.Id || item.OwnerUserId == btUser.Id || await ProjectService.IsAssignedProjectManagerAsync(btUser.Id, item.ProjectId))
+                                {
+                                    <a class="btn btn-sm btn-outline-info mb-1 flex-row justify-content-center" asp-action="Edit" asp-controller="Tickets" asp-route-id="@item.Id">
+                                        <div class="fst-button">
+                                            Edit
+                                        </div>
+                                        <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                    </a>
+                                }
+                                @if (User.IsInRole(nameof(Roles.Admin)) || await ProjectService.IsAssignedProjectManagerAsync(btUser.Id, item.ProjectId))
+                                {
+                                    if (item.Archived)
+                                    {
+                                        <a class="btn btn-sm btn-outline-info mb-1 flex-row justify-content-center" asp-action="Restore" asp-controller="Tickets" asp-route-id="@item.Id">
+                                            <div class="fst-button">
+                                                Restore
+                                            </div>
+                                            <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a class="btn btn-sm btn-outline-info mb-1 flex-row justify-content-center" asp-action="Archive" asp-controller="Tickets" asp-route-id="@item.Id">
+                                            <div class="fst-button">
+                                                Archive
+                                            </div>
+                                            <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                        </a>
+                                    }
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+@section scripts {
+
+    <!-- Load Simple DataTables Scripts-->
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
+    <script src="~/js/datatables/datatables-simple-demo.js"></script>
+
+}

@@ -1,49 +1,84 @@
 ﻿@model BugTracker.Models.ViewModels.AssignDeveloperViewModel
+@using BugTracker.Models.Enums
+@using Microsoft.AspNetCore.Identity
+@using BugTracker.Services.Interfaces
 
-<div class="container">
+@inject UserManager<BTUser> UserManager
+@inject IBTProjectService ProjectService
 
-    <h2>Assign Developer for:</h2>
+@{
+    BTUser btUser = await UserManager.GetUserAsync(User);
+    int projectId = Model.Ticket.Project.Id;
+    string projectManagerId = (await ProjectService.GetProjectManagerAsync(projectId)).Id;
+}
 
-    <div class="row">
+@if (User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
+{
 
-        <div class="col-md-6">
 
-            <h3>@Model.Ticket.Title</h3>
-
-            <a style="font-size: small" asp-action="Details" asp-controller="Projects" asp-route-id="@Model.Ticket.ProjectId">@Model.Ticket.Project.Name</a>
-
-            <div class="card">
-
-                <div class="card-header">
-                    <label class="label">Assign Developer</label>
-                </div>
-
-                <div class="card-body">
-                    <form method="post" asp-action="AssignDeveloper" asp-controller="Tickets">
-                        <input hidden asp-for="Ticket.Id" />
-                        <p>Description: @Model.Ticket.Description</p>
-
-                        <div class="mb-3">
-                            <label class="col-form-label">Select Developers</label>
-
-                            <select required asp-for="DeveloperId" class="form-control" asp-items="@Model.Developers">
-                                <option></option>
-                            </select>
-                        </div>
-                        <div class="mt-3">
-                            <input type="submit" value="Assign" class="btn btn-primary" />
-                        </div>
-                    </form>
-                </div>
-
-            </div>
-
+    <!-- Page Title -->
+    <div class="row justify-content-between align-items-center mb-3">
+        <div class="col flex-shrink-0 mb-5 mb-md-0">
+            <h1 class="">Assign a Developer for:</h1>
+            <h4 class="text-muted">@Model.Ticket.Title</h4>
         </div>
-
     </div>
+
+    <hr />
+
+
+    <a class="btn btn-outline-info mb-3" asp-action="Details" asp-controller="Projects" asp-route-id="@Model.Ticket.ProjectId">@Model.Ticket.Project.Name</a>
+
+    <!-- Main page content-->
+    <main>
+        <!-- Profile content row-->
+        <div class="row gx-5">
+            <div class="col-12">
+                <!-- Account details card-->
+                <div class="card card-raised mb-5">
+                    <div class="card-header bg-primary text-white px-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="me-4">
+                                <div class="card-title">Ticket: @Model.Ticket.Title</div>
+                                <div class="card-subtitle">Assign a Developer</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-5">
+                        <form method="post" asp-action="AssignDeveloper" asp-controller="Tickets">
+                            <input hidden asp-for="Ticket.Id" />
+                            <p>Description: @Model.Ticket.Description</p>
+                            @if (btUser.Id == projectManagerId || User.IsInRole(nameof(Roles.Admin)))
+                            {
+                                <div class="form-floating mb-3">
+                                    <select required id="floatingSelect" asp-for="DeveloperId" class="form-select" asp-items="@Model.Developers">
+                                        <option></option>
+                                    </select>
+                                    <label for="floatingSelect">Select Developer</label>
+                                </div>
+                            }
+                            else
+                            {
+                                <h5 class="mb-2">You must be the Project Manager of this project to add a developer.</h5>
+                                <div class="form-group">
+                                    <label class="form-label">Select Developers</label>
+                                    <select required disabled asp-for="DeveloperId" class="form-control" asp-items="@Model.Developers">
+                                        <option>Select a developer</option>
+                                    </select>
+                                </div>
+                            }
+                            <div class="mt-3">
+                                <input type="submit" value="Assign" class="btn btn-outline-info" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 
     <div>
-        <a asp-action="UnassignedTickets" asp-controller="Tickets">Back to Unassigned Tickets</a>
+        <a class="btn btn-outline-info" asp-action="UnassignedTickets" asp-controller="Tickets">Back to Unassigned Tickets</a>
     </div>
 
-</div>
+}

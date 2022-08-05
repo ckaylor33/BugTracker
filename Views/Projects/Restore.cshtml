@@ -7,83 +7,48 @@
 <h1>Restore</h1>
 
 <h3>Are you sure you want to restore this project?</h3>
-<div>
-    <h4>Project</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StartDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StartDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EndDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EndDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Archived)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Archived)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImageFileName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ImageFileName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImageFileData)
-        </dt>
-        <dd class = "col-sm-10">
-            @if (Model.ImageFileData != null)
-            {
-                <img id="imageFileData" class="img-fluid img-thumbnail" style="width:100px; height:80px;" src="data:image/*;base64,@(Convert.ToBase64String(Model.ImageFileData))" />
-            }
-            else
-            {
-                <img id="imageFileData" class="img-fluid img-thumbnail" style="width:100px; height:80px;" src="/img/projectDefault.png" />
 
-            }
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ImageContentType)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ImageContentType)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Company)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Company.Name)
-        </dd class>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ProjectPriorityId)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ProjectPriority.Name)
-        </dd class>
-    </dl>
-    
-    <form asp-action="Restore">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Restore" class="btn btn-success" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+<div class="row gx-5">
+    <div class="col mb-5 mt-3">
+        <div class="card h-100 card-raised bg-white text-dark">
+            <div class="card-header bg-primary px-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="me-4">
+                        <h5 class="text-white">Project</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body px-4">
+                <hr />
+                <ul class="list-group list-group-flush mb-2 pb-0">
+                    <li class="list-group-item"><strong>Project Name: </strong><span class="">@Html.DisplayFor(model => model.Name)</span></li>
+                    <li class="list-group-item"><strong>Description: </strong><span class="">@Html.DisplayFor(model => model.Description)</span></li>
+                    <li class="list-group-item"><strong>Created: </strong><span class="">@Html.DisplayFor(model => model.StartDate)</span></li>
+                    <li class="list-group-item"><strong>Updated: </strong><span class="">@Html.DisplayFor(model => model.EndDate)</span></li>
+                    <li class="list-group-item"><strong>Project Archived: </strong><span class="">@Html.DisplayFor(model => model.Archived)</span></li>
+                    <li class="list-group-item">
+                        <strong>Project Image: </strong><span class="">
+                            @if (Model.ImageFileData != null)
+                            {
+                                <img id="imageFileData" class="img-fluid img-thumbnail" style="width:100px; height:auto;" src="data:image/*;base64,@(Convert.ToBase64String(Model.ImageFileData))" />
+                            }
+                            else
+                            {
+                                <img id="imageFileData" class="img-fluid img-thumbnail" style="width:100px; height:auto;" src="/img/projectDefault.png" />
+
+                            }
+                        </span>
+                    </li>
+                    <li class="list-group-item"><strong>Company Name: </strong><span class="">@Html.DisplayFor(model => model.Company.Name)</span></li>
+                    <li class="list-group-item"><strong>Project Priority: </strong><span class="">@Html.DisplayFor(model => model.ProjectPriority.Name)</span></li>
+                </ul>
+
+                <form asp-action="Restore">
+                    <input type="hidden" asp-for="Id" />
+                    <input type="submit" value="Restore" class="btn btn-success" />
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
+<a class="btn-outline-info btn" asp-action="AllProjects">All Projects</a>

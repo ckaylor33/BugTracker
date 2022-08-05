@@ -6,82 +6,44 @@
 
 <h1>Restore</h1>
 
-<h3>Are you sure you want to restore this ticket?</h3>
-<div>
-    <h4>Ticket</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Title)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Title)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Created)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Created)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Updated)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Updated)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Archived)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Archived)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Project)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Project.Name)
-        </dd class>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TicketType)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TicketType.Name)
-        </dd class>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TicketStatus)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TicketStatus.Name)
-        </dd class>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TicketPriority)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TicketPriority.Name)
-        </dd class>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.OwnerUser)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.OwnerUser.FullName)
-        </dd class>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DeveloperUser)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DeveloperUser.FullName)
-        </dd class>
-    </dl>
-    
-    <form asp-action="Restore">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Restore" class="btn btn-success" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+<h4 class="text-muted">Are you sure you want to restore this ticket?</h4>
+
+<hr/>
+
+<div class="row gx-5">
+    <div class="col mb-5 mt-3">
+        <div class="card h-100 card-raised bg-white text-dark">
+            <div class="card-header bg-primary px-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="me-4">
+                        <h5 class="text-white">Ticket</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body px-4">
+                <hr />
+                <ul class="list-group list-group-flush mb-0 pb-0">
+                    <li class="list-group-item"><strong>Title: </strong><span class="">@Html.DisplayFor(model => model.Title)</span></li>
+                    <li class="list-group-item"><strong>Description: </strong><span class="">@Html.DisplayFor(model => model.Description)</span></li>
+                    <li class="list-group-item"><strong>Created: </strong><span class="">@Html.DisplayFor(model => model.Created)</span></li>
+                    <li class="list-group-item"><strong>Updated: </strong><span class="">@Html.DisplayFor(model => model.Updated)</span></li>
+                    <li class="list-group-item"><strong>Project Name: </strong><span class="">@Html.DisplayFor(model => model.Project.Name)</span></li>
+                    <li class="list-group-item"><strong>Ticket Type: </strong><span class="">@Html.DisplayFor(model => model.TicketType.Name)</span></li>
+                    <li class="list-group-item"><strong>Ticket Status: </strong><span class="">@Html.DisplayFor(model => model.TicketStatus.Name)</span></li>
+                    <li class="list-group-item"><strong>Ticket Priority: </strong><span class="">@Html.DisplayFor(model => model.TicketPriority.Name)</span></li>
+                    <li class="list-group-item"><strong>Ticket Owner: </strong><span class="">@Html.DisplayFor(model => model.OwnerUser.FullName)</span></li>
+                    <li class="list-group-item"><strong>Ticket Developer: </strong><span class="">@Html.DisplayFor(model => model.DeveloperUser.FullName)</span></li>
+                </ul>
+                <hr />
+                <form asp-action="Restore" asp-controller="Tickets">
+                    <input type="hidden" asp-for="Id" />
+                    <input type="submit" value="Restore" class="btn btn-success" />
+                </form>
+            </div>
+
+        </div>
+        <a class="btn-outline-info btn mt-3" asp-action="AllTickets">All Tickets</a>
+    </div>
 </div>
+
+

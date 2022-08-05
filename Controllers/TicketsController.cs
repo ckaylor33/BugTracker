@@ -63,14 +63,8 @@ namespace BugTracker.Controllers
 
             List<Ticket> tickets = await _ticketService.GetAllTicketsByCompanyAsync(companyId);
 
-            if (User.IsInRole(nameof(Roles.Developer)) || User.IsInRole(nameof(Roles.Submitter)))
-            {
-                return View(tickets.Where(t => t.Archived == false));
-            }
-            else
-            {
-                return View(tickets);
-            }
+            return View(tickets);
+
         }
 
         //GET: ArchivedTickets
@@ -92,7 +86,7 @@ namespace BugTracker.Controllers
             int companyId = User.Identity.GetCompanyId().Value;
             string btUserId = _userManager.GetUserId(User);
 
-            List<Ticket> tickets = await _ticketService.GetUnassignedTicketsAsync(companyId);
+            List<Ticket> tickets = (await _ticketService.GetUnassignedTicketsAsync(companyId)).Where(t => t.Archived == false || t.ArchivedByProject == false).ToList();
 
             if (User.IsInRole(nameof(Roles.Admin)))
             {
@@ -163,6 +157,24 @@ namespace BugTracker.Controllers
 
             return RedirectToAction(nameof(AssignDeveloper), new { id = model.Ticket.Id });
 
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Dashboard()
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            try
+            {
+                List<Ticket> tickets = await _ticketService.GetAllTicketsByCompanyAsync(companyId);
+
+                return View(tickets);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
 
         // GET: Tickets/Details/5
