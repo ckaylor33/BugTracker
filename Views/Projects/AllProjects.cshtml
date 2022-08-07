@@ -16,9 +16,12 @@
 @*Can access the principal user in different ways - see below*@
 @if (User.IsInRole(Roles.Admin.ToString()) || User.IsInRole(nameof(Roles.ProjectManager)))
 {
-    <p>
-        <a asp-action="Create" class="btn btn-outline-info">Create New</a>
-    </p>
+    <a asp-action="Create" class="btn btn-outline-info mb-3">
+        <div class="fst-button">
+            Create A Project
+        </div>
+        <i class="material-icons icon-sm ms-1">chevron_right</i>
+    </a>
 }
 
 <div class="row gx-5">
@@ -53,13 +56,13 @@
                     </thead>
                     <tbody>
                         @* Table body *@
-                        @foreach (Project item in Model.OrderByDescending(p => p.StartDate))
+                        @foreach (Project item in Model.OrderBy(p => p.StartDate))
                         {
                             <tr>
                                 <td><strong>@item.Name</strong></td>
                                 <td>@item.Description</td>
-                                <td><span style="font-size: small">@item.StartDate.ToString("MM/dd/yyyy")</span></td>
-                                <td><span style="font-size: small">@item.EndDate.ToString("MM/dd/yyyy")</span></td>
+                                <td><span style="font-size: small">@item.StartDate.ToString("dd/MM/yyyy")</span></td>
+                                <td><span style="font-size: small">@item.EndDate.ToString("dd/MM/yyyy")</span></td>
                                 <td>
                                     @if (item?.ImageFileData != null)
                                     {
@@ -81,40 +84,43 @@
                                     }
                                 </td>
                                 <td>
-                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info mb-2">
-                                        <div class="fst-button">
-                                            Details
-                                        </div>
-                                        <i class="material-icons icon-sm ms-1">chevron_right</i>
-                                    </a>
-                                    @if (User.IsInRole(Roles.Admin.ToString()) || User.IsInRole(nameof(Roles.ProjectManager)))
-                                    {
+                                    <div class="row mx-3">
 
-                                        <a class="btn btn-sm btn-outline-info mb-2" asp-action="Edit" asp-controller="Projects" asp-route-id="@item.Id">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info mb-2 flex-row justify-content-center">
                                             <div class="fst-button">
-                                                Edit
+                                                Details
                                             </div>
                                             <i class="material-icons icon-sm ms-1">chevron_right</i>
                                         </a>
-                                        @if (item.Archived)
+                                        @if (User.IsInRole(Roles.Admin.ToString()) || User.IsInRole(nameof(Roles.ProjectManager)))
                                         {
-                                            <a class="btn btn-sm btn-outline-info mb-2" asp-action="Restore" asp-controller="Projects" asp-route-id="@item.Id">
+
+                                            <a class="btn btn-sm btn-outline-info mb-2 flex-row justify-content-center" asp-action="Edit" asp-controller="Projects" asp-route-id="@item.Id">
                                                 <div class="fst-button">
-                                                    Restore
+                                                    Edit
                                                 </div>
                                                 <i class="material-icons icon-sm ms-1">chevron_right</i>
                                             </a>
+                                            @if (item.Archived)
+                                            {
+                                                <a class="btn btn-sm btn-outline-info mb-2 flex-row justify-content-center" asp-action="Restore" asp-controller="Projects" asp-route-id="@item.Id">
+                                                    <div class="fst-button">
+                                                        Restore
+                                                    </div>
+                                                    <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <a class="btn btn-sm btn-outline-info mb-2 flex-row justify-content-center" asp-action="Archive" asp-controller="Projects" asp-route-id="@item.Id">
+                                                    <div class="fst-button">
+                                                        Archive
+                                                    </div>
+                                                    <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                                </a>
+                                            }
                                         }
-                                        else
-                                        {
-                                            <a class="btn btn-sm btn-outline-info mb-2" asp-action="Archive" asp-controller="Projects" asp-route-id="@item.Id">
-                                                <div class="fst-button">
-                                                    Archive
-                                                </div>
-                                                <i class="material-icons icon-sm ms-1">chevron_right</i>
-                                            </a>
-                                        }
-                                    }
+                                    </div>
                                 </td>
                             </tr>
                         }

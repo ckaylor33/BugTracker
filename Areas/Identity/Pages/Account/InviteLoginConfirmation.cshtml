@@ -1,7 +1,12 @@
-﻿@{
-    Layout = "";
+﻿@page
+@model InviteLoginConfirmationModel
+@{
+    ViewData["Title"] = "Account Created";
 }
 
+@{
+    Layout = "";
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,7 +15,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Login - Material Admin Pro</title>
+    <title>Account Created</title>
     <!-- Load Favicon-->
     <link href="~/assets/img/favicon.ico" rel="shortcut icon" type="image/x-icon" />
     <!-- Load Material Icons from Google Fonts-->
@@ -21,6 +26,7 @@
     <!-- Load main stylesheet-->
     <link href="~/css/styles.css" rel="stylesheet" />
 </head>
+
 <body class="bg-pattern-doubs">
     <!-- Layout wrapper-->
     <div id="layoutAuthentication">
@@ -28,7 +34,6 @@
         <div id="layoutAuthentication_content">
             <!-- Main page content-->
             <main>
-                <!-- Main content container-->
                 <div class="container">
                     <div class="row justify-content-center">
                         <div class="col-xxl-4 col-xl-5 col-lg-6 col-md-8">
@@ -37,14 +42,8 @@
                                     <!-- Auth header with logo image-->
                                     <div class="text-center">
                                         <img class="mb-3" src="~/assets/img/icons/background.svg" alt="..." style="height: 48px" />
-                                        <div class="subheading-1 mb-5">Welcome to</div>
-                                        <h1 class="display-5 mb-5">The Bug Tracker</h1>
-                                        <a class="btn btn-raised-primary" asp-area="Identity" asp-page="/Account/Login">
-                                            <div class="fst-button">
-                                                Try it out!
-                                            </div>
-                                            <i class="material-icons icon-sm ms-1">chevron_right</i>
-                                        </a>
+                                        <h1 class="display-5 mb-0">@ViewData["Title"]</h1>
+                                        <div class="subheading-1 mb-5">Please <a asp-page="./Login">click here to log in</a>.</div>
                                     </div>
                                 </div>
                             </div>
@@ -53,23 +52,27 @@
                 </div>
             </main>
         </div>
-        <!-- Layout footer-->
-        <div id="layoutAuthentication_footer">
-            <!-- Auth footer-->
-            <footer class="p-4">
-                <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between small">
-                    <div class="me-sm-3 mb-2 mb-sm-0"><div class="fw-500 text-white">Copyright &copy; The Bug Tracker @DateTimeOffset.Now.Year</div></div>
-                    <div class="ms-sm-3">
-                        @*
-                        <a class="fw-500 text-decoration-none link-white" href="#!">Privacy</a>
-                        <a class="fw-500 text-decoration-none link-white mx-4" href="#!">Terms</a>
-                        <a class="fw-500 text-decoration-none link-white" href="#!">Help</a>
-                        *@
-                    </div>
-                </div>
-            </footer>
-        </div>
     </div>
+
+
+    <!-- Layout footer-->
+    <div id="layoutAuthentication_footer">
+        <!-- Auth footer-->
+        <footer class="p-4">
+            <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between small">
+                <div class="me-sm-3 mb-2 mb-sm-0"><div class="fw-500 text-white">Copyright &copy; The Bug Tracker @DateTimeOffset.Now.Year</div></div>
+                <div class="ms-sm-3">
+                    @*
+                    <a class="fw-500 text-decoration-none link-white" href="#!">Privacy</a>
+                    <a class="fw-500 text-decoration-none link-white mx-4" href="#!">Terms</a>
+                    <a class="fw-500 text-decoration-none link-white" href="#!">Help</a>
+                    *@
+                </div>
+            </div>
+        </footer>
+    </div>
+
+
     <!-- Load Bootstrap JS bundle-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <!-- Load global scripts-->
@@ -77,3 +80,8 @@
     <script src="~/js/scripts.js"></script>
 </body>
 </html>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

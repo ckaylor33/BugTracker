@@ -23,8 +23,8 @@
                             <th>Developer</th>
                             <th>Status</th>
                             <th>Priority</th>
-                            <th>Date</th>
-                            <th>Action</th>
+                            <th>Created</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -59,7 +59,15 @@
                                 <td><span class="badge-warning">@ticket.TicketPriority.Name </span></td>
                                 <td>@ticket.Created.ToString("dd-MM-yyyy")</td>
                                 <td>
-                                    <a class="btn btn-sm btn-outline-info m-1" asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id"><span class="material-icons">description</span></a>
+                                    <div class="row mx-3">
+
+                                        <a class="btn btn-sm btn-outline-info m-1 flex-row justify-content-center" asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id">
+                                            <div class="fst-button">
+                                                Details
+                                            </div>
+                                            <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         }

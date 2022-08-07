@@ -45,10 +45,21 @@
 
                 <form asp-action="Restore">
                     <input type="hidden" asp-for="Id" />
-                    <input type="submit" value="Restore" class="btn btn-success" />
+                    <button type="submit" class="btn-raised-info btn">
+                        <div class="fst-button">
+                            Restore
+                        </div>
+                        <i class="material-icons icon-sm ms-1">chevron_right</i>
+                    </button>
                 </form>
             </div>
         </div>
     </div>
 </div>
-<a class="btn-outline-info btn" asp-action="AllProjects">All Projects</a>
+<a class="btn-outline-info btn" asp-action="AllProjects">
+    <div class="fst-button">
+        All Projects
+    </div>
+    <i class="material-icons icon-sm ms-1">chevron_right</i>
+
+</a>

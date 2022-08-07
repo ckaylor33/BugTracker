@@ -9,7 +9,7 @@
 @{
     BTUser btUser = await UserManager.GetUserAsync(User);
     int projectId = Model.Ticket.Project.Id;
-    string projectManagerId = (await ProjectService.GetProjectManagerAsync(projectId)).Id;
+    string projectManagerId = (await ProjectService.GetProjectManagerAsync(projectId))?.Id;
 }
 
 @if (User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
@@ -26,8 +26,12 @@
 
     <hr />
 
-
-    <a class="btn btn-outline-info mb-3" asp-action="Details" asp-controller="Projects" asp-route-id="@Model.Ticket.ProjectId">@Model.Ticket.Project.Name</a>
+    <a asp-action="Details" asp-route-id="@Model.Ticket.ProjectId" asp-controller="Projects" class="btn btn-outline-info mb-3">
+        <div class="fst-button">
+            View Project
+        </div>
+        <i class="material-icons icon-sm ms-1">chevron_right</i>
+    </a>
 
     <!-- Main page content-->
     <main>
@@ -68,7 +72,12 @@
                                 </div>
                             }
                             <div class="mt-3">
-                                <input type="submit" value="Assign" class="btn btn-outline-info" />
+                                <button type="submit" value="Assign" class="btn btn-raised-info">
+                                    <div class="fst-button">
+                                        Assign
+                                    </div>
+                                    <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -78,7 +87,14 @@
     </main>
 
     <div>
-        <a class="btn btn-outline-info" asp-action="UnassignedTickets" asp-controller="Tickets">Back to Unassigned Tickets</a>
+        <a class="btn btn-outline-info" asp-action="UnassignedTickets" asp-controller="Tickets">
+            <div class="fst-button">
+                Back to Unassigned Tickets
+            </div>
+            <i class="material-icons icon-sm ms-1">chevron_right</i>
+
+
+        </a>
     </div>
 
 }

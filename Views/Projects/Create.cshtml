@@ -103,9 +103,14 @@
                                 <label class="control-label">Project Manager</label>
                             </div>
                         }
-                        <div class="form-group">
-                            <input type="submit" value="Create" class="btn btn-outline-info" />
-                        </div>
+
+                        <button type="submit" value="Create" class="btn btn-raised-info">
+                            <div class="fst-button">
+                                Create
+                            </div>
+                            <i class="material-icons icon-sm ms-1">chevron_right</i>
+                        </button>
+
                     </form>
                 </div>
             </div>
@@ -114,7 +119,13 @@
 </main>
 
 <div>
-    <a class="btn btn-outline-info" asp-action="AllProjects" asp-controller="Projects">Back to List</a>
+    <a class="btn btn-outline-info" asp-action="AllProjects" asp-controller="Projects">
+        <div class="fst-button">
+            Back to List
+        </div>
+        <i class="material-icons icon-sm ms-1">chevron_right</i>
+
+    </a>
 </div>
 
 @section Scripts {

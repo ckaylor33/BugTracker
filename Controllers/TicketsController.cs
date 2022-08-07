@@ -159,6 +159,28 @@ namespace BugTracker.Controllers
 
         }
 
+        //GET: UrgentTickets
+        [HttpGet]
+        public async Task<IActionResult> UrgentTickets()
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            List<Ticket> tickets = (await _ticketService.GetAllTicketsByCompanyAsync(companyId)).ToList();
+
+            return View(tickets);
+        }
+
+        //GET: HighPriorityTickets
+        [HttpGet]
+        public async Task<IActionResult> HighPriorityTickets()
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            List<Ticket> tickets = (await _ticketService.GetAllTicketsByCompanyAsync(companyId)).ToList();
+
+            return View(tickets);
+        }
+
         [HttpGet]
         public async Task<IActionResult> Dashboard()
         {
@@ -235,20 +257,17 @@ namespace BugTracker.Controllers
 
                     await _ticketService.AddNewTicketAsync(ticket);
 
-                    //TODO: Ticket History
                     Ticket newTicket = await _ticketService.GetTicketAsNoTrackingAsync(ticket.Id);
                     await _historyService.AddHistoryAsync(null, newTicket, btUser.Id);
-
 
                     //TODO: Ticket Notification
                 }
                 catch (Exception)
                 {
-
                     throw;
                 }
 
-                return RedirectToAction(nameof(AllTickets));
+                return RedirectToAction(nameof(Details), new { id = ticket.Id });
             }
 
             if (User.IsInRole(nameof(Roles.Admin)))
@@ -262,7 +281,7 @@ namespace BugTracker.Controllers
 
             ViewData["TicketPriorityId"] = new SelectList(await _lookupService.GetTicketPrioritiesAsync(), "Id", "Name");
             ViewData["TicketTypeId"] = new SelectList(await _lookupService.GetTicketTypesAsync(), "Id", "Name");
-            return View(ticket);
+            return View(nameof(Create));
         }
 
         // GET: Tickets/Edit/5
@@ -320,10 +339,11 @@ namespace BugTracker.Controllers
                         throw;
                     }
                 }
-                //TODO: Add Ticket History
+
                 Ticket newTicket = await _ticketService.GetTicketAsNoTrackingAsync(ticket.Id);
                 await _historyService.AddHistoryAsync(oldTicket, newTicket, btUser.Id);
-                return RedirectToAction(nameof(AllTickets));
+
+                return RedirectToAction(nameof(Details), new { id = ticket.Id });
             }
             ViewData["TicketPriorityId"] = new SelectList(await _lookupService.GetTicketPrioritiesAsync(), "Id", "Name", ticket.TicketPriorityId);
             ViewData["TicketStatusId"] = new SelectList(await _lookupService.GetTicketStatusesAsync(), "Id", "Name", ticket.TicketStatusId);
@@ -436,6 +456,78 @@ namespace BugTracker.Controllers
             Ticket ticket = await _ticketService.GetTicketByIdAsync(id);
             await _ticketService.ArchiveTicketAsync(ticket);
             return RedirectToAction(nameof(AllTickets));
+        }
+
+        //POST: ResolveTicket
+        [HttpPost]
+        [Authorize(Roles = "Developer")]
+        public async Task<IActionResult> ResolveTicket(int id)
+        {
+            Ticket ticket = await _ticketService.GetTicketByIdAsync(id);
+            BTUser btUser = await _userManager.GetUserAsync(User);
+
+            if (ModelState.IsValid)
+            {
+
+                //Old Ticket
+                Ticket oldTicket = await _ticketService.GetTicketAsNoTrackingAsync(id);
+
+                try
+                {
+                    await _ticketService.ResolveTicketAsync(ticket);
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+
+                //New Ticket
+                Ticket newTicket = await _ticketService.GetTicketAsNoTrackingAsync(id);
+                await _historyService.AddHistoryAsync(oldTicket, newTicket, btUser.Id);
+
+                return RedirectToAction(nameof(Details), new { id = id });
+
+            }
+
+            return View(ticket);
+
+        }
+
+        //POST: ResolveTicket
+        [HttpPost]
+        [Authorize(Roles = "Developer")]
+        public async Task<IActionResult> DevelopTicket(int id)
+        {
+            Ticket ticket = await _ticketService.GetTicketByIdAsync(id);
+            BTUser btUser = await _userManager.GetUserAsync(User);
+
+            if (ModelState.IsValid)
+            {
+
+                //Old Ticket
+                Ticket oldTicket = await _ticketService.GetTicketAsNoTrackingAsync(id);
+
+                try
+                {
+                    await _ticketService.DevelopTicketAsync(ticket);
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+
+                //New Ticket
+                Ticket newTicket = await _ticketService.GetTicketAsNoTrackingAsync(id);
+                await _historyService.AddHistoryAsync(oldTicket, newTicket, btUser.Id);
+
+                return RedirectToAction(nameof(Details), new { id = id });
+
+            }
+
+            return View(ticket);
+
         }
 
         // GET: Tickets/Restore/5

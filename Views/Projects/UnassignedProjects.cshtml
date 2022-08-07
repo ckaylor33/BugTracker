@@ -7,7 +7,7 @@
 <h1>Unassigned Projects</h1>
 
 
-<a class="btn btn-sm btn-outline-info my-3" asp-action="Create" asp-controller="Projects">
+<a class="btn btn-outline-info my-3" asp-action="Create" asp-controller="Projects">
     <div class="fst-button">
         Create New Project
     </div>
@@ -75,12 +75,15 @@
                             @Html.DisplayFor(modelItem => item.ProjectPriority.Name)
                         </td>
                         <td>
-                            <a class="btn btn-sm btn-outline-info" asp-action="AssignPM" asp-controller="Projects" asp-route-projectId="@item.Id">
+                            <div class="row mx-3">
+
+                            <a class="btn btn-sm btn-outline-info flex-row justify-content-center" asp-action="AssignPM" asp-controller="Projects" asp-route-projectId="@item.Id">
                                 <div class="fst-button">
-                                    Add PM
+                                    Assign PM
                                 </div>
                                 <i class="material-icons icon-sm ms-1">chevron_right</i>
                             </a>
+                            </div>
                         </td>
                     </tr>
                 }

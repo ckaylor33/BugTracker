@@ -1,0 +1,156 @@
+﻿@model IEnumerable<BugTracker.Models.Ticket>
+@using BugTracker.Models.Enums
+@using Microsoft.AspNetCore.Identity
+@using BugTracker.Services.Interfaces
+
+@inject UserManager<BTUser> UserManager
+@inject IBTProjectService ProjectService
+
+@{
+    ViewData["Title"] = "Urgent Tickets";
+    BTUser btUser = await UserManager.GetUserAsync(User);
+}
+
+<h1>Urgent Tickets</h1>
+
+
+<a class="btn btn-outline-info mb-3" asp-action="Create">
+    <div class="fst-button">
+        Create New
+    </div>
+    <i class="material-icons icon-sm ms-1">chevron_right</i>
+</a>
+
+<div class="row gx-5">
+    <div class="col-lg-12 mb-4">
+        <!-- Table -->
+        <div class="card card-raised mb-5">
+            <div class="card-header bg-primary text-white px-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="me-4">
+                        <h2 class="card-title text-white mb-0">All Tickets</h2>
+                        <div class="card-subtitle">Access Below</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <!-- Tickets -->
+                <table id="datatablesSimple">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Title)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Description)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Project)
+                            </th>
+                            <th>
+                                Ticket Type
+                            </th>
+                            <th>
+                                Ticket Priority
+                            </th>
+                            <th>
+                                Ticket Developer
+                            </th>
+                            <th>Created</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.OrderByDescending(d => d.Created))
+                        {
+                            if (item.TicketPriority.Name == nameof(BTTicketPriority.Urgent) && item.Archived == false)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>
+                                            @Html.DisplayFor(modelItem => item.Title)
+                                        </strong>
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Description)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Project.Name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.TicketType.Name)
+                                    </td>
+                                    @if (item.TicketPriority.Name == nameof(BTTicketPriority.High) || item.TicketPriority.Name == nameof(BTTicketPriority.Urgent))
+                                    {
+                                        <td>
+                                            <span class="badge bg-danger rounded-pill">@item.TicketPriority.Name</span>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td>
+                                            <span class="badge bg-success rounded-pill">@item.TicketPriority.Name</span>
+                                        </td>
+                                    }
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.DeveloperUser.FullName)
+                                    </td>
+                                    <td>@Html.DisplayFor(modelItem => item.Created)</td>
+                                    <td>
+                                        <div class="row mx-3">
+
+                                            <a class="btn btn-sm btn-outline-info m-1 flex-row justify-content-center" asp-action="Details" asp-controller="Tickets" asp-route-id="@item.Id">
+                                                <div class="fst-button">
+                                                    Details
+                                                </div>
+                                                <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                            </a>
+
+                                            @if (User.IsInRole(nameof(Roles.Admin)) || item.DeveloperUserId == btUser.Id || item.OwnerUserId == btUser.Id || await ProjectService.IsAssignedProjectManagerAsync(btUser.Id, item.ProjectId))
+                                            {
+                                                <a class="btn btn-sm btn-outline-info m-1 flex-row justify-content-center" asp-action="Edit" asp-controller="Tickets" asp-route-id="@item.Id">
+                                                    <div class="fst-button">
+                                                        Edit
+                                                    </div>
+                                                    <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                                </a>
+                                            }
+                                            @if (User.IsInRole(nameof(Roles.Admin)) || await ProjectService.IsAssignedProjectManagerAsync(btUser.Id, item.ProjectId))
+                                            {
+                                                if (item.Archived)
+                                                {
+                                                    <a class="btn btn-sm btn-outline-info m-1 flex-row justify-content-center" asp-action="Restore" asp-controller="Tickets" asp-route-id="@item.Id">
+                                                        <div class="fst-button">
+                                                            Restore
+                                                        </div>
+                                                        <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                                    </a>
+                                                }
+                                                else
+                                                {
+                                                    <a class="btn btn-sm btn-outline-info m-1 flex-row justify-content-center" asp-action="Archive" asp-controller="Tickets" asp-route-id="@item.Id">
+                                                        <div class="fst-button">
+                                                            Archive
+                                                        </div>
+                                                        <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                                    </a>
+                                                }
+                                            }
+                                        </div>
+
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <!-- Load Simple DataTables Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
+    <script src="~/js/datatables/datatables-simple-demo.js"></script>
+    }

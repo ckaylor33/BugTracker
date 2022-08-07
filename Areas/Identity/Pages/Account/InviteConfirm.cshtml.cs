@@ -15,11 +15,11 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 namespace BugTracker.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
-    public class ResetPasswordModel : PageModel
+    public class InviteConfirmModel : PageModel
     {
         private readonly UserManager<BTUser> _userManager;
 
-        public ResetPasswordModel(UserManager<BTUser> userManager)
+        public InviteConfirmModel(UserManager<BTUser> userManager)
         {
             _userManager = userManager;
         }
@@ -73,13 +73,13 @@ namespace BugTracker.Areas.Identity.Pages.Account
             if (user == null)
             {
                 // Don't reveal that the user does not exist
-                return RedirectToPage("./ResetPasswordConfirmation");
+                return RedirectToPage("./InviteLoginConfirmation");
             }
 
             var result = await _userManager.ResetPasswordAsync(user, Input.Code, Input.Password);
             if (result.Succeeded)
             {
-                return RedirectToPage("./ResetPasswordConfirmation");
+                return RedirectToPage("./InviteLoginConfirmation");
             }
 
             foreach (var error in result.Errors)

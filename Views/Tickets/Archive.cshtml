@@ -8,7 +8,7 @@
 
 <h4 class="text-muted">Are you sure you want to archive this ticket?</h4>
 
-<hr/>
+<hr />
 
 <div class="row gx-5">
     <div class="col mb-5 mt-3">
@@ -37,12 +37,22 @@
                 <hr />
                 <form asp-action="Archive">
                     <input type="hidden" asp-for="Id" />
-                    <input type="submit" value="Archive" class="btn btn-danger" />
+                    <button type="submit" value="Archive" class="btn btn-raised-danger mb-3">
+                        <div class="fst-button">
+                            Submit
+                        </div>
+                        <i class="material-icons icon-sm ms-1">chevron_right</i>
+                    </button>
                 </form>
             </div>
 
         </div>
-        <a class="btn-outline-info btn mt-3" asp-action="AllTickets">All Tickets</a>
+        <a class="btn-outline-info btn mt-3" asp-action="AllTickets">
+            <div class="fst-button">
+                All Tickets
+            </div>
+            <i class="material-icons icon-sm ms-1">chevron_right</i>
+        </a>
     </div>
 </div>
 

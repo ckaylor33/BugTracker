@@ -75,7 +75,9 @@
                                     }
                                 </td>
                                 <td>
-                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info mb-2">
+                                    <div class="row mx-3">
+
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info mb-2 flex-row justify-content-center">
                                         <div class="fst-button">
                                             Details
                                         </div>
@@ -84,7 +86,7 @@
                                     @if (User.IsInRole(Roles.Admin.ToString()) || User.IsInRole(nameof(Roles.ProjectManager)))
                                     {
 
-                                        <a class="btn btn-sm btn-outline-info mb-2" asp-action="Edit" asp-controller="Projects" asp-route-id="@item.Id">
+                                        <a class="btn btn-sm btn-outline-info mb-2" asp-action="Edit" asp-controller="Projects" asp-route-id="@item.Id flex-row justify-content-center">
                                             <div class="fst-button">
                                                 Edit
                                             </div>
@@ -92,7 +94,7 @@
                                         </a>
                                         @if (item.Archived)
                                         {
-                                            <a class="btn btn-sm btn-outline-info mb-2" asp-action="Restore" asp-controller="Projects" asp-route-id="@item.Id">
+                                            <a class="btn btn-sm btn-outline-info mb-2" asp-action="Restore" asp-controller="Projects" asp-route-id="@item.Id flex-row justify-content-center">
                                                 <div class="fst-button">
                                                     Restore
                                                 </div>
@@ -101,7 +103,7 @@
                                         }
                                         else
                                         {
-                                            <a class="btn btn-sm btn-outline-info mb-2" asp-action="Archive" asp-controller="Projects" asp-route-id="@item.Id">
+                                            <a class="btn btn-sm btn-outline-info mb-2 flex-row justify-content-center" asp-action="Archive" asp-controller="Projects" asp-route-id="@item.Id">
                                                 <div class="fst-button">
                                                     Archive
                                                 </div>
@@ -109,6 +111,7 @@
                                             </a>
                                         }
                                     }
+                                    </div>
                                 </td>
                             </tr>
                         }

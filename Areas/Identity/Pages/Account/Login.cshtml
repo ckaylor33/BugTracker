@@ -69,13 +69,18 @@
                                         </div>
                                         <div class="form-group d-flex align-items-center justify-content-between mt-4 mb-4">
                                             <a class="small fw-500 text-decoration-none" asp-area="Identity" asp-page="/Account/ForgotPassword">Forgot Password?</a>
-                                            <button class="btn btn-primary" type="submit">Login</button>
+                                            <button class="btn btn-raised-primary" type="submit">
+                                                <div class="fst-button">
+                                                    Login
+                                                </div>
+                                                <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                            </button>
                                         </div>
 
                                         <div class="subheading-1 mb-1 text-center">Or try it out with a demo account</div>
 
                                         <div class="form-group d-flex flex-column align-items-center justify-content-between mt-0 mb-0">
-                                            <a class="btn btn-primary mb-1" asp-area="Identity" asp-page="/Account/DemoLogin">
+                                            <a class="btn btn-raised-primary mb-1" asp-area="Identity" asp-page="/Account/DemoLogin">
                                                 <i class="material-icons leading-icon">login</i>
                                                 <div class="me-3">Use Demo Account</div>
                                             </a>

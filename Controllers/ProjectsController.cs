@@ -103,7 +103,6 @@ namespace BugTracker.Controllers
             return View(projects);
         }
 
-
         //GET: ActiveProjects
         [HttpGet]
         public async Task<IActionResult> ActiveProjects()
@@ -124,6 +123,28 @@ namespace BugTracker.Controllers
             List<Project> projects = new();
 
             projects = await _projectService.GetUnassignedProjectsAsync(companyId);
+
+            return View(projects);
+        }
+
+        //GET: UrgentProjects
+        [HttpGet]
+        public async Task<IActionResult> UrgentProjects()
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            List<Project> projects = (await _projectService.GetAllProjectsByCompanyAsync(companyId)).ToList();
+
+            return View(projects);
+        }
+
+        //GET: HighPriorityProjects
+        [HttpGet]
+        public async Task<IActionResult> HighPriorityProjects()
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            List<Project> projects = (await _projectService.GetAllProjectsByCompanyAsync(companyId)).ToList();
 
             return View(projects);
         }
@@ -283,7 +304,7 @@ namespace BugTracker.Controllers
                     throw;
                 }
                 //TODO: Redirect to All Projects
-                return RedirectToAction(nameof(AllProjects));
+                return RedirectToAction(nameof(Details), new { id = model.Project.Id });
             }
 
             return RedirectToAction(nameof(Create));

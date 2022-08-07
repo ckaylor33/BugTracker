@@ -167,7 +167,8 @@
                     <th>Ticket Type</th>
                     <th>Ticket Status</th>
                     <th>Ticket Priority</th>
-                    <th>Action</th>
+                    <th>Created</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -204,6 +205,7 @@
                                 <span class="badge bg-success rounded-pill">@item.TicketPriority.Name</span>
                             </td>
                         }
+                        <td> @Html.DisplayFor(modelItem => item.Created)</td>
                         <td>
                             <div class="row mx-3">
                                 <a class="btn btn-sm btn-outline-info mb-1 flex-row justify-content-center" asp-action="Details" asp-controller="Tickets" asp-route-id="@item.Id">

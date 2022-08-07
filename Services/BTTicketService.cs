@@ -538,5 +538,45 @@ namespace BugTracker.Services
                 throw;
             }
         }
+
+        public async Task DevelopTicketAsync(Ticket ticket)
+        {
+            try
+            {
+                if (ticket != null)
+                {
+                    ticket.TicketStatusId = (await LookupTicketStatusIdAsync("Development")).Value;
+                    _context.Update(ticket);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+
+        }
+
+        public async Task ResolveTicketAsync(Ticket ticket)
+        {
+            try
+            {
+                if (ticket != null)
+                {
+                    ticket.TicketStatusId = (await LookupTicketStatusIdAsync("Resolved")).Value;
+                    _context.Update(ticket);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+
+        }
     }
 }

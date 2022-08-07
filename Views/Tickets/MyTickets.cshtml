@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<BugTracker.Models.Ticket>
+@using BugTracker.Models.Enums
 
 @{
     ViewData["Title"] = "My Tickets";
@@ -6,9 +7,12 @@
 
 <h1>My Tickets</h1>
 
-<p>
-    <a class="btn btn-outline-info" asp-action="Create">Create New</a>
-</p>
+<a class="btn btn-outline-info mb-3" asp-action="Create">
+    <div class="fst-button">
+        Create New
+    </div>
+    <i class="material-icons icon-sm ms-1">chevron_right</i>
+</a>
 
 <div class="row gx-5">
     <div class="col-lg-12 mb-4">
@@ -44,6 +48,7 @@
                             <th>
                                 @Html.DisplayNameFor(model => model.TicketPriority)
                             </th>
+                            <th>@Html.DisplayNameFor(model => model.Created)</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -66,12 +71,42 @@
                                 <td>
                                     @Html.DisplayFor(modelItem => item.TicketStatus.Name)
                                 </td>
+                                @if (item.TicketPriority.Name == nameof(BTTicketPriority.High) || item.TicketPriority.Name == nameof(BTTicketPriority.High))
+                                {
+                                    <td>
+                                        <div class="badge rounded-pill bg-danger">
+
+                                            @Html.DisplayFor(modelItem => item.TicketPriority.Name)
+                                        </div>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+                                        <div class="badge rounded-pill bg-success">
+
+                                            @Html.DisplayFor(modelItem => item.TicketPriority.Name)
+                                        </div>
+                                    </td>
+                                }
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.TicketPriority.Name)
+                                    @Html.DisplayFor(modelItem => item.Created)
                                 </td>
                                 <td>
-                                    <a class="btn btn-sm btn-outline-secondary m-1" asp-action="Edit" asp-controller="Tickets" asp-route-id="@item.Id"><span class="material-icons">edit</span></a>
-                                    <a class="btn btn-sm btn-outline-info m-1" asp-action="Details" asp-controller="Tickets" asp-route-id="@item.Id"><span class="material-icons">description</span></a>
+                                    <div class="row mx-3">
+                                        <a class="btn btn-sm btn-outline-info m-1 flex-row justify-content-center" asp-action="Details" asp-controller="Tickets" asp-route-id="@item.Id">
+                                            <div class="fst-button">
+                                                Details
+                                            </div>
+                                            <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                        </a>
+                                        <a class="btn btn-sm btn-outline-info m-1 flex-row justify-content-center" asp-action="Edit" asp-controller="Tickets" asp-route-id="@item.Id">
+                                            <div class="fst-button">
+                                                Edit
+                                            </div>
+                                            <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         }

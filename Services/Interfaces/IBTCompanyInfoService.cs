@@ -8,6 +8,10 @@ namespace BugTracker.Services.Interfaces
     {
         //every member of an interface is public - use for asthetic and learning purpose for now
 
+        public Task AddCompanyAsync(Company company);
+
+        public Task<Company> AssignNewUserToCompany(string companyName);
+
         public Task<Company> GetCompanyInfoByIdAsync(int? companyId);
 
         public Task<List<BTUser>> GetAllMembersAsync(int companyId);

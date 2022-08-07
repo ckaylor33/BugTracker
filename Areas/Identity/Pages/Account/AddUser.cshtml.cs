@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
 using System.Text.Encodings.Web;
+using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using BugTracker.Models;
 using Microsoft.AspNetCore.Identity;
@@ -15,40 +13,44 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using BugTracker.Services.Interfaces;
+using System.Linq;
+using Microsoft.AspNetCore.Authentication;
+using BugTracker.Extensions;
 using BugTracker.Models.Enums;
 
 namespace BugTracker.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
-    public class RegisterModel : PageModel
+    public class AddUserModel : PageModel
     {
-        private readonly SignInManager<BTUser> _signInManager;
         private readonly UserManager<BTUser> _userManager;
-        private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly ILogger<RegisterModel> _logger;
         private readonly IBTCompanyInfoService _companyInfoService;
         private readonly IBTRolesService _rolesService;
+        private readonly SignInManager<BTUser> _signInManager;
 
-        public RegisterModel(
-            UserManager<BTUser> userManager,
-            SignInManager<BTUser> signInManager,
-            ILogger<RegisterModel> logger,
-            IEmailSender emailSender, IBTCompanyInfoService companyInfoService, IBTRolesService rolesService)
+        public AddUserModel(UserManager<BTUser> userManager,
+                            IEmailSender emailSender,
+                            ILogger<RegisterModel> logger,
+                            IBTCompanyInfoService companyInfoService,
+                            IBTRolesService rolesService,
+                            SignInManager<BTUser> signInManager)
         {
             _userManager = userManager;
-            _signInManager = signInManager;
-            _logger = logger;
             _emailSender = emailSender;
+            _logger = logger;
             _companyInfoService = companyInfoService;
             _rolesService = rolesService;
+            _signInManager = signInManager;
         }
 
         [BindProperty]
         public InputModel Input { get; set; }
 
-        public string ReturnUrl { get; set; }
-
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
+
+        public string ReturnUrl { get; set; }
 
         public class InputModel
         {
@@ -65,44 +67,29 @@ namespace BugTracker.Areas.Identity.Pages.Account
             [Display(Name = "Last Name")]
             public string LastName { get; set; }
 
-            [Required]
-            [Display(Name = "Company Name")]
-            public string CompanyName { get; set; }
 
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
-            [DataType(DataType.Password)]
-            [Display(Name = "Password")]
-            public string Password { get; set; }
-
-            [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-            public string ConfirmPassword { get; set; }
-        }
-
-        public async Task OnGetAsync(string returnUrl = null)
-        {
-            ReturnUrl = returnUrl;
-            ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
-            returnUrl ??= Url.Content("~/Home/Dashboard");
+            returnUrl ??= Url.Content("~/Identity/Account/AddUser");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
+                int companyId = User.Identity.GetCompanyId().Value;
+                string companyName = (await _companyInfoService.GetCompanyInfoByIdAsync(companyId)).Name;
+
                 var user = new BTUser
                 {
                     UserName = Input.Email,
                     Email = Input.Email,
                     FirstName = Input.FirstName,
                     LastName = Input.LastName,
-                    Company = await _companyInfoService.AssignNewUserToCompany(Input.CompanyName),
+                    Company = await _companyInfoService.AssignNewUserToCompany(companyName),
                     EmailConfirmed = true
                 };
-                var result = await _userManager.CreateAsync(user, Input.Password);
+
+                var result = await _userManager.CreateAsync(user);
 
                 if ((await _rolesService.GetUsersInRoleAsync(nameof(Roles.Admin), user.Company.Id)).Count == 0)
                 {
@@ -111,31 +98,22 @@ namespace BugTracker.Areas.Identity.Pages.Account
                 }
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("User created a new account with password.");
+                    _logger.LogInformation("User created a new account without password.");
 
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var code = await _userManager.GeneratePasswordResetTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
+                        "/Account/InviteConfirm",
                         pageHandler: null,
-                        values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl },
+                        values: new { area = "Identity", code },
                         protocol: Request.Scheme);
 
-                    //await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                    //    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                    await _emailSender.SendEmailAsync(
+                        Input.Email,
+                        "Company Invite",
+                        $"You have been invited to join {companyName}. Enter and confirm your new password to join by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return LocalRedirect(returnUrl);
-
-                    //if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                    //{
-                    //    return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
-                    //}
-                    //else
-                    //{
-                    //    await _signInManager.SignInAsync(user, isPersistent: false);
-                    //    return LocalRedirect(returnUrl);
-                    //}
+                    return RedirectToPage("./AddUserInviteSent");
                 }
                 foreach (var error in result.Errors)
                 {

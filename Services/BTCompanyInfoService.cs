@@ -2,6 +2,7 @@
 using BugTracker.Models;
 using BugTracker.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +16,47 @@ namespace BugTracker.Services
         public BTCompanyInfoService(ApplicationDbContext context)
         {
             _context = context;
+        }
+
+        public async Task AddCompanyAsync(Company company)
+        {
+            try
+            {
+                await _context.AddAsync(company);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<Company> AssignNewUserToCompany(string companyName)
+        {
+            companyName = companyName.ToLower();
+
+            List<Company> companies = await _context.Companies.ToListAsync();
+
+            //CHECK IF COMPANY ALREADY EXISTS, ASSIGN USER TO COMPANY IF IT DOES
+            foreach (Company company in companies)
+            {
+                if (companyName == company.Name.ToLower())
+                {
+                    return company;
+                }
+            }
+
+            Company newCompany = new();
+
+            newCompany.Name = companyName;
+
+            await AddCompanyAsync(newCompany);
+
+            //await  _rolesService.AddUserToRoleAsync(User, nameof(Roles.Admin));
+
+            return newCompany;
+
         }
 
         public async Task<List<BTUser>> GetAllMembersAsync(int companyId)

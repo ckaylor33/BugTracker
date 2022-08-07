@@ -13,9 +13,13 @@
 
 <h1>All Tickets</h1>
 
-<p>
-    <a class="btn btn-outline-info" asp-action="Create">Create New</a>
-</p>
+
+<a class="btn btn-outline-info mb-3" asp-action="Create">
+    <div class="fst-button">
+        Create New
+    </div>
+    <i class="material-icons icon-sm ms-1">chevron_right</i>
+</a>
 
 <div class="row gx-5">
     <div class="col-lg-12 mb-4">
@@ -52,7 +56,9 @@
                             <th>
                                 Ticket Developer
                             </th>
-                            <th>Action</th>
+                            <th>@Html.DisplayNameFor(model => model.Created)</th>
+                            <th>@Html.DisplayNameFor(model => model.TicketStatus)</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -89,23 +95,52 @@
                                     @Html.DisplayFor(modelItem => item.DeveloperUser.FullName)
                                 </td>
                                 <td>
-                                    <a class="btn btn-sm btn-outline-info m-1" asp-action="Details" asp-controller="Tickets" asp-route-id="@item.Id"><span class="material-icons">description</span></a>
+                                    @Html.DisplayFor(modelItem => item.Created)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.TicketStatus.Name)
+                                </td>
+                                <td>
+                                    <div class="row mx-3">
 
-                                    @if (User.IsInRole(nameof(Roles.Admin)) || item.DeveloperUserId == btUser.Id || item.OwnerUserId == btUser.Id || await ProjectService.IsAssignedProjectManagerAsync(btUser.Id, item.ProjectId))
-                                    {
-                                        <a class="btn btn-sm btn-outline-secondary m-1" asp-action="Edit" asp-controller="Tickets" asp-route-id="@item.Id"><span class="material-icons">edit</span></a>
-                                    }
-                                    @if (User.IsInRole(nameof(Roles.Admin)) || await ProjectService.IsAssignedProjectManagerAsync(btUser.Id, item.ProjectId))
-                                    {
-                                        if (item.Archived)
+                                        <a class="btn btn-sm btn-outline-info m-1 flex-row justify-content-center" asp-action="Details" asp-controller="Tickets" asp-route-id="@item.Id">
+                                            <div class="fst-button">
+                                                Details
+                                            </div>
+                                            <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                        </a>
+
+                                        @if (User.IsInRole(nameof(Roles.Admin)) || item.DeveloperUserId == btUser.Id || item.OwnerUserId == btUser.Id || await ProjectService.IsAssignedProjectManagerAsync(btUser.Id, item.ProjectId))
                                         {
-                                            <a class="btn btn-sm btn-outline-primary m-1" asp-action="Restore" asp-controller="Tickets" asp-route-id="@item.Id"><span class="material-icons">restore</span></a>
+                                            <a class="btn btn-sm btn-outline-info m-1 flex-row justify-content-center" asp-action="Edit" asp-controller="Tickets" asp-route-id="@item.Id">
+                                                <div class="fst-button">
+                                                    Edit
+                                                </div>
+                                                <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                            </a>
                                         }
-                                        else
+                                        @if (User.IsInRole(nameof(Roles.Admin)) || await ProjectService.IsAssignedProjectManagerAsync(btUser.Id, item.ProjectId))
                                         {
-                                            <a class="btn btn-sm btn-outline-danger m-1" asp-action="Archive" asp-controller="Tickets" asp-route-id="@item.Id"><span class="material-icons">archive</span></a>
+                                            if (item.Archived)
+                                            {
+                                                <a class="btn btn-sm btn-outline-info m-1 flex-row justify-content-center" asp-action="Restore" asp-controller="Tickets" asp-route-id="@item.Id">
+                                                    <div class="fst-button">
+                                                        Restore
+                                                    </div>
+                                                    <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <a class="btn btn-sm btn-outline-info m-1 flex-row justify-content-center" asp-action="Archive" asp-controller="Tickets" asp-route-id="@item.Id">
+                                                    <div class="fst-button">
+                                                        Archive
+                                                    </div>
+                                                    <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                                </a>
+                                            }
                                         }
-                                    }
+                                    </div>
 
                                 </td>
                             </tr>
