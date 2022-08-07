@@ -277,44 +277,48 @@
                         }
                         <td>@ticket.Created.ToString("dd-MM-yyyy")</td>
                         <td>
-                            <a class="btn btn-sm btn-outline-info me-1" asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id">
-                                <div class="fst-button">
-                                    Details
-                                </div>
-                                <i class="material-icons icon-sm ms-1">chevron_right</i>
-                            </a>
-                            @if (ticket.DeveloperUserId == btUser.Id || ticket.OwnerUserId == btUser.Id || (projectManager?.Id == btUser.Id) || User.IsInRole(nameof(Roles.Admin)))
-                            {
-                                <a class="btn btn-sm btn-outline-info me-1" asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id">
+                            <div class="row mx-3">
+
+
+                                <a class="btn btn-sm btn-outline-info mb-2 flex-row justify-content-center" asp-action="Details" asp-controller="Tickets" asp-route-id="@ticket.Id">
                                     <div class="fst-button">
-                                        Edit
+                                        Details
                                     </div>
                                     <i class="material-icons icon-sm ms-1">chevron_right</i>
                                 </a>
-                            }
-
-                            @if (User.IsInRole("Admin") || await ProjectService.IsAssignedProjectManagerAsync(btUser.Id, ticket.ProjectId))
-                            {
-                                if (ticket.Archived)
+                                @if (ticket.DeveloperUserId == btUser.Id || ticket.OwnerUserId == btUser.Id || (projectManager?.Id == btUser.Id) || User.IsInRole(nameof(Roles.Admin)))
                                 {
-                                    <a class="btn btn-sm btn-outline-info me-1" asp-action="Restore" asp-controller="Tickets" asp-route-id="@ticket.Id">
+                                    <a class="btn btn-sm btn-outline-info mb-2 flex-row justify-content-center" asp-action="Edit" asp-controller="Tickets" asp-route-id="@ticket.Id">
                                         <div class="fst-button">
-                                            Restore
-                                        </div>
-                                        <i class="material-icons icon-sm ms-1">chevron_right</i>
-                                    </a>
-                                }
-                                else
-                                {
-                                    <a class="btn btn-sm btn-outline-info me-1" asp-action="Archive" asp-controller="Tickets" asp-route-id="@ticket.Id">
-                                        <div class="fst-button">
-                                            Archive
+                                            Edit
                                         </div>
                                         <i class="material-icons icon-sm ms-1">chevron_right</i>
                                     </a>
                                 }
 
-                            }
+                                @if (User.IsInRole("Admin") || await ProjectService.IsAssignedProjectManagerAsync(btUser.Id, ticket.ProjectId))
+                                {
+                                    if (ticket.Archived)
+                                    {
+                                        <a class="btn btn-sm btn-outline-info mb-2 flex-row justify-content-center" asp-action="Restore" asp-controller="Tickets" asp-route-id="@ticket.Id">
+                                            <div class="fst-button">
+                                                Restore
+                                            </div>
+                                            <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <a class="btn btn-sm btn-outline-info mb-2 flex-row justify-content-center" asp-action="Archive" asp-controller="Tickets" asp-route-id="@ticket.Id">
+                                            <div class="fst-button">
+                                                Archive
+                                            </div>
+                                            <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                        </a>
+                                    }
+
+                                }
+                            </div>
                         </td>
                     </tr>
                 }

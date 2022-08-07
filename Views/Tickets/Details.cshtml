@@ -28,7 +28,7 @@
         @if (!string.IsNullOrEmpty(Model.DeveloperUserId))
         {
             <h5 class="text-muted">
-                Ticket Developer: @Model.DeveloperUser.FullName
+                Ticket Developer: @Model.DeveloperUser?.FullName
             </h5>
         }
         else
@@ -37,7 +37,7 @@
                 Ticket Developer: Not Assigned
             </h5>
         }
-        <h5 class="text-muted">Ticket Submitter: @Model.OwnerUser.FullName</h5>
+        <h5 class="text-muted">Ticket Submitter: @Model.OwnerUser?.FullName</h5>
     </div>
     <div class="col-6">
 
