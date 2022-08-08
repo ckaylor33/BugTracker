@@ -73,17 +73,6 @@ namespace BugTracker.Areas.Identity.Pages.Account
             [Display(Name = "Last Name")]
             public string LastName { get; set; }
 
-            [NotMapped]
-            [DataType(DataType.Upload)]
-            public IFormFile AvatarFormFile { get; set; }
-
-
-            [Display(Name = "Avatar")]
-            public string AvatarFileName { get; set; }
-            public byte[] AvatarFileData { get; set; }
-
-            [Display(Name = "File Extension")]
-            public string AvatarContentType { get; set; }
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
@@ -106,14 +95,6 @@ namespace BugTracker.Areas.Identity.Pages.Account
                     EmailConfirmed = true
                 };
 
-
-                if (Input?.AvatarFormFile != null)
-                {
-                    user.AvatarFileData = await _fileService.ConvertFileToByteArrayAsync(Input.AvatarFormFile);
-                    user.AvatarFileName = Input.AvatarFormFile.FileName;
-                    user.AvatarContentType = Input.AvatarFormFile.ContentType;
-                }
-
                 //New user given default password and role
                 var result = await _userManager.CreateAsync(user, "Abc&123!");
                 await _userManager.AddToRoleAsync(user, Roles.Developer.ToString());
@@ -124,6 +105,7 @@ namespace BugTracker.Areas.Identity.Pages.Account
                     await _rolesService.AddUserToRoleAsync(user, nameof(Roles.Admin));
 
                 }
+
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account without password.");

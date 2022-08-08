@@ -191,7 +191,7 @@
             <div class="card-body px-4">
                 <ul class="list-group mb-0">
                     @* Logic for avatars *@
-                    @foreach (BTUser member in await ProjectService.GetAllProjectMembersExceptPMAsync(Model.Id))
+                    @foreach (BTUser member in await ProjectService.GetAllProjectMembersExceptPMAsync(@Model.Id))
                     {
                         <li class="list-group-item">
                             <a href="">

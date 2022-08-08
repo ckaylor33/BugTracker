@@ -11,6 +11,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Http;
+using BugTracker.Services.Interfaces;
+using BugTracker.Data;
 
 namespace BugTracker.Areas.Identity.Pages.Account
 {
@@ -18,10 +22,14 @@ namespace BugTracker.Areas.Identity.Pages.Account
     public class InviteConfirmModel : PageModel
     {
         private readonly UserManager<BTUser> _userManager;
+        private readonly IBTFileService _fileService;
+        private readonly ApplicationDbContext _context;
 
-        public InviteConfirmModel(UserManager<BTUser> userManager)
+        public InviteConfirmModel(UserManager<BTUser> userManager, IBTFileService fileService, ApplicationDbContext context)
         {
             _userManager = userManager;
+            _fileService = fileService;
+            _context = context;
         }
 
         [BindProperty]
@@ -44,6 +52,18 @@ namespace BugTracker.Areas.Identity.Pages.Account
             public string ConfirmPassword { get; set; }
 
             public string Code { get; set; }
+
+            [NotMapped]
+            [DataType(DataType.Upload)]
+            public IFormFile AvatarFormFile { get; set; }
+
+
+            [Display(Name = "Avatar")]
+            public string AvatarFileName { get; set; }
+            public byte[] AvatarFileData { get; set; }
+
+            [Display(Name = "File Extension")]
+            public string AvatarContentType { get; set; }
         }
 
         public IActionResult OnGet(string code = null)
@@ -70,13 +90,32 @@ namespace BugTracker.Areas.Identity.Pages.Account
             }
 
             var user = await _userManager.FindByEmailAsync(Input.Email);
+
             if (user == null)
             {
                 // Don't reveal that the user does not exist
                 return RedirectToPage("./InviteLoginConfirmation");
             }
 
+
+            if (Input?.AvatarFormFile != null)
+            {
+                user.AvatarFileData = await _fileService.ConvertFileToByteArrayAsync(Input.AvatarFormFile);
+                user.AvatarFileName = Input.AvatarFormFile.FileName;
+                user.AvatarContentType = Input.AvatarFormFile.ContentType;
+
+                var userAvatar = await _userManager.UpdateAsync(user);
+
+                foreach (var error in userAvatar.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+
+                await _context.SaveChangesAsync();
+            }
+
             var result = await _userManager.ResetPasswordAsync(user, Input.Code, Input.Password);
+
             if (result.Succeeded)
             {
                 return RedirectToPage("./InviteLoginConfirmation");

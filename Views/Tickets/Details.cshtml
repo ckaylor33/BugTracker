@@ -108,7 +108,9 @@
                 </div>
             </div>
             <div class="card-body px-4 bg-white">
-                <h5>Project: @Model.Project.Name</h5>
+                <h6>
+                    <a style="text-decoration:none" asp-action="Details" asp-controller="Projects" asp-route-id="@Model.ProjectId">Project: @Model.Project.Name</a>
+                </h6>
                 <h6>Ticket: @Model.Title</h6>
                 <p class="text-muted">Ticket Description: @Model.Description</p>
                 <hr />
@@ -204,31 +206,31 @@
                     @*Loop to show comments made for the Ticket*@
                     @foreach (TicketComment comment in Model.Comments)
                     {
-                            <li class="online mb-4">
-                                <div class="media">
+                        <li class="online mb-4">
+                            <div class="media">
 
-                                    <a href="javascript:void(0);">
-                                        @if (comment.User?.AvatarFileData != null)
-                                        {
-                                            <img class="media-object" src="data:img/*;base,@(Convert.ToBase64String(comment.User.AvatarFileData))" alt="" style="width: 30px; height: 30px;" />
-                                        }
-                                        else
-                                        {
-                                            <img class="media-object" src="~/img/avatardefault_92824.png" alt="" style="width:30px; height: 30px;" />
-                                        }
+                                <a href="javascript:void(0);">
+                                    @if (comment.User?.AvatarFileData != null)
+                                    {
+                                        <img class="media-object" src="data:img/*;base,@(Convert.ToBase64String(comment?.User.AvatarFileData))" alt="" style="width: 30px; height: 30px;" />
+                                    }
+                                    else
+                                    {
+                                        <img class="media-object" src="~/img/avatardefault_92824.png" alt="" style="width:30px; height: 30px;" />
+                                    }
 
-                                    </a>
-                                    <div class="media-body">
-                                        <span class="text-muted" style="font-size:x-small;">
-                                            @@ @comment.User?.FullName
-                                            <small class="float-right">@comment.Created.ToString("dd.MM.yyyy h:ss tt")</small>:
-                                        </span>
-                                    </div>
-                                    <span class="message text-dark">@Html.Raw(comment.Comment)</span>
-
+                                </a>
+                                <div class="media-body">
+                                    <span class="text-muted" style="font-size:x-small;">
+                                        @@ @comment.User?.FullName
+                                        <small class="float-right">@comment.Created.ToString("dd.MM.yyyy h:ss tt")</small>:
+                                    </span>
                                 </div>
-                                <hr />
-                            </li>
+                                <span class="message text-dark">@Html.Raw(comment.Comment)</span>
+
+                            </div>
+                            <hr />
+                        </li>
                     }
                 </ul>
             </div>
