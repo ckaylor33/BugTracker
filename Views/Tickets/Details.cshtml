@@ -208,14 +208,9 @@
                             <div class="media">
 
                                 <a href="javascript:void(0);">
-                                    @if (btUser?.AvatarFileData != null)
-                                    {
-                                        <img class="media-object" style="width:30px; height: 30px;" src="data:image/*;base64,@(Convert.ToBase64String(btUser.AvatarFileData))" alt="" />
-                                    }
-                                    else
-                                    {
-                                        <img class="media-object" src="~/img/avatardefault_92824.png" alt="" style="width:30px; height: 30px;" />
-                                    }
+
+                                    <img class="media-object" src="~/img/avatardefault_92824.png" alt="" style="width:30px; height: 30px;" />
+
                                 </a>
                                 <div class="media-body">
                                     <span class="text-muted" style="font-size:x-small;">
