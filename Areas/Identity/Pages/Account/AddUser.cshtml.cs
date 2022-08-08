@@ -17,6 +17,9 @@ using System.Linq;
 using Microsoft.AspNetCore.Authentication;
 using BugTracker.Extensions;
 using BugTracker.Models.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BugTracker.Areas.Identity.Pages.Account
 {
@@ -29,13 +32,15 @@ namespace BugTracker.Areas.Identity.Pages.Account
         private readonly IBTCompanyInfoService _companyInfoService;
         private readonly IBTRolesService _rolesService;
         private readonly SignInManager<BTUser> _signInManager;
+        private readonly IBTFileService _fileService;
 
         public AddUserModel(UserManager<BTUser> userManager,
                             IEmailSender emailSender,
                             ILogger<RegisterModel> logger,
                             IBTCompanyInfoService companyInfoService,
                             IBTRolesService rolesService,
-                            SignInManager<BTUser> signInManager)
+                            SignInManager<BTUser> signInManager,
+                            IBTFileService fileService)
         {
             _userManager = userManager;
             _emailSender = emailSender;
@@ -43,6 +48,7 @@ namespace BugTracker.Areas.Identity.Pages.Account
             _companyInfoService = companyInfoService;
             _rolesService = rolesService;
             _signInManager = signInManager;
+            _fileService = fileService;
         }
 
         [BindProperty]
@@ -67,7 +73,17 @@ namespace BugTracker.Areas.Identity.Pages.Account
             [Display(Name = "Last Name")]
             public string LastName { get; set; }
 
+            [NotMapped]
+            [DataType(DataType.Upload)]
+            public IFormFile AvatarFormFile { get; set; }
 
+
+            [Display(Name = "Avatar")]
+            public string AvatarFileName { get; set; }
+            public byte[] AvatarFileData { get; set; }
+
+            [Display(Name = "File Extension")]
+            public string AvatarContentType { get; set; }
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
@@ -79,17 +95,29 @@ namespace BugTracker.Areas.Identity.Pages.Account
                 int companyId = User.Identity.GetCompanyId().Value;
                 string companyName = (await _companyInfoService.GetCompanyInfoByIdAsync(companyId)).Name;
 
+
                 var user = new BTUser
                 {
                     UserName = Input.Email,
                     Email = Input.Email,
                     FirstName = Input.FirstName,
                     LastName = Input.LastName,
-                    Company = await _companyInfoService.AssignNewUserToCompany(companyName),
+                    CompanyId = companyId,
                     EmailConfirmed = true
                 };
 
-                var result = await _userManager.CreateAsync(user);
+
+                if (Input?.AvatarFormFile != null)
+                {
+                    user.AvatarFileData = await _fileService.ConvertFileToByteArrayAsync(Input.AvatarFormFile);
+                    user.AvatarFileName = Input.AvatarFormFile.FileName;
+                    user.AvatarContentType = Input.AvatarFormFile.ContentType;
+                }
+
+                //New user given default password and role
+                var result = await _userManager.CreateAsync(user, "Abc&123!");
+                await _userManager.AddToRoleAsync(user, Roles.Developer.ToString());
+
 
                 if ((await _rolesService.GetUsersInRoleAsync(nameof(Roles.Admin), user.Company.Id)).Count == 0)
                 {

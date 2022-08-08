@@ -56,7 +56,7 @@
                     </thead>
                     <tbody>
                         @* Table body *@
-                        @foreach (Project item in Model.OrderBy(p => p.StartDate))
+                        @foreach (Project item in Model.OrderByDescending(p => p.StartDate))
                         {
                             <tr>
                                 <td><strong>@item.Name</strong></td>

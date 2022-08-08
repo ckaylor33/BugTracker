@@ -196,7 +196,7 @@
                         <li class="list-group-item">
                             <a href="">
                                 <div class="mb-2">
-                                    @if (member.AvatarFileData != null)
+                                    @if (member?.AvatarFileData != null)
                                     {
                                         <img class="rounded-circle" style="width:40px;height:auto;" src="data:img/*;base,@(Convert.ToBase64String(member.AvatarFileData))" alt="" />
                                     }

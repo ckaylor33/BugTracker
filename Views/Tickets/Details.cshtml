@@ -204,32 +204,31 @@
                     @*Loop to show comments made for the Ticket*@
                     @foreach (TicketComment comment in Model.Comments)
                     {
-                        <li class="online mb-4">
-                            <div class="media">
+                            <li class="online mb-4">
+                                <div class="media">
 
-                                <a href="javascript:void(0);">
-                                    @if (btUser?.AvatarFileData != null)
-                                    {
-                                        <img class="media-object" src="data:img/*;base,@(Convert.ToBase64String(btUser.AvatarFileData))" alt="" style="width: 30px; height: 30px;"
-                                        />
-                                    }
-                                    else
-                                    {
-                                        <img class="media-object" src="~/img/avatardefault_92824.png" alt="" style="width:30px; height: 30px;" />
-                                    }
+                                    <a href="javascript:void(0);">
+                                        @if (comment.User?.AvatarFileData != null)
+                                        {
+                                            <img class="media-object" src="data:img/*;base,@(Convert.ToBase64String(comment.User.AvatarFileData))" alt="" style="width: 30px; height: 30px;" />
+                                        }
+                                        else
+                                        {
+                                            <img class="media-object" src="~/img/avatardefault_92824.png" alt="" style="width:30px; height: 30px;" />
+                                        }
 
-                                </a>
-                                <div class="media-body">
-                                    <span class="text-muted" style="font-size:x-small;">
-                                        @@ @comment.User.FullName
-                                        <small class="float-right">@comment.Created.ToString("dd.MM.yyyy h:ss tt")</small>:
-                                    </span>
+                                    </a>
+                                    <div class="media-body">
+                                        <span class="text-muted" style="font-size:x-small;">
+                                            @@ @comment.User?.FullName
+                                            <small class="float-right">@comment.Created.ToString("dd.MM.yyyy h:ss tt")</small>:
+                                        </span>
+                                    </div>
+                                    <span class="message text-dark">@Html.Raw(comment.Comment)</span>
+
                                 </div>
-                                <span class="message text-dark">@Html.Raw(comment.Comment)</span>
-
-                            </div>
-                            <hr />
-                        </li>
+                                <hr />
+                            </li>
                     }
                 </ul>
             </div>
