@@ -250,6 +250,8 @@ namespace BugTracker.Services
                                                     .ThenInclude(t => t.OwnerUser)
                                                 .Include(p => p.Members)
                                                 .Include(p => p.ProjectPriority)
+                                                .Include(p => p.Tickets)
+                                                    .ThenInclude(t => t.History)
                                                 .FirstOrDefaultAsync(p => p.Id == projectId && p.CompanyId == companyId);
                 return project;
             }

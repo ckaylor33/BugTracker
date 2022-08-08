@@ -182,7 +182,12 @@
                         <div class="form-group mb-3">
                             <textarea asp-for="@(new TicketComment().Comment)" rows="8" required placeholder="Add comment..." class="form-control">                                                                                                                                                 </textarea>
                         </div>
-                        <button class="btn btn-outline-info">Submit</button>
+                        <button class="btn btn-outline-info">
+                            <div class="fst-button">
+                                Submit
+                            </div>
+                            <i class="material-icons icon-sm ms-1">chevron_right</i>
+                        </button>
                     }
                     else
                     {
