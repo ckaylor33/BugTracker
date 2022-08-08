@@ -208,9 +208,10 @@
                             <div class="media">
 
                                 <a href="javascript:void(0);">
-                                    @if (comment?.UserId != null)
+                                    @if (btUser?.AvatarFileData != null)
                                     {
-                                        <img class="media-object" src="~/img/avatardefault_92824.png" alt="" style="data:img/*;base,@(Convert.ToBase64String(btUser.AvatarFileData))" />
+                                        <img class="media-object" src="data:img/*;base,@(Convert.ToBase64String(btUser.AvatarFileData))" alt="" style="width: 30px; height: 30px;"
+                                        />
                                     }
                                     else
                                     {
