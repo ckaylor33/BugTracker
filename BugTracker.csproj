@@ -56,6 +56,7 @@
     <Content Remove="Views\Home\plugins-charts.cshtml" />
     <Content Remove="Views\Projects\Index.cshtml" />
     <Content Remove="Views\Tickets\Index.cshtml" />
+    <Content Remove="wwwroot\assets\img\patterns\doubs - Copy.svg" />
   </ItemGroup>
 
   <ItemGroup>
