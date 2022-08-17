@@ -11,6 +11,8 @@ namespace BugTracker.Services.Interfaces
 
         public string ConvertByteArrayToFile(byte[] fileData, string extension);
 
+        public Task<byte[]> EncodeImageAsync(string fileName);
+
         public string GetFileIcon(string file);
 
         //estimates file size based on bytes composed within the file

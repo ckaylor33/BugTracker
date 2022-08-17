@@ -303,7 +303,6 @@ namespace BugTracker.Controllers
 
                     throw;
                 }
-                //TODO: Redirect to All Projects
                 return RedirectToAction(nameof(Details), new { id = model.Project.Id });
             }
 

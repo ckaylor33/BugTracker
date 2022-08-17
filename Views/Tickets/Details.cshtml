@@ -212,7 +212,7 @@
                                 <a href="javascript:void(0);">
                                     @if (comment.User?.AvatarFileData != null)
                                     {
-                                        <img class="media-object" src="data:img/*;base,@(Convert.ToBase64String(comment?.User.AvatarFileData))" alt="" style="width: 30px; height: 30px;" />
+                                        <img class="media-object rounded-circle" src="data:image/*;base64,@(Convert.ToBase64String(comment?.User.AvatarFileData))" alt="" style="width: 40px; height: 40px;" />
                                     }
                                     else
                                     {
@@ -220,13 +220,13 @@
                                     }
 
                                 </a>
-                                <div class="media-body">
-                                    <span class="text-muted" style="font-size:x-small;">
+                                <div class="media-body mt-1">
+                                    <span class="text-muted" style="font-size:small;">
                                         @@ @comment.User?.FullName
-                                        <small class="float-right">@comment.Created.ToString("dd.MM.yyyy h:ss tt")</small>:
+                                        <span class="float-right" >@comment.Created.ToString("dd.MM.yyyy h:ss tt")</span>:
                                     </span>
                                 </div>
-                                <span class="message text-dark">@Html.Raw(comment.Comment)</span>
+                                <span class="message text-dark mt-1" style="font-size:medium;">@Html.Raw(comment.Comment)</span>
 
                             </div>
                             <hr />

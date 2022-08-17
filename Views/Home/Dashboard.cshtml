@@ -226,8 +226,8 @@
                 {
                     <tr>
                         <td><strong>@project.Name</strong></td>
-                        <td><span style="font-size: small">@project.StartDate.ToString("MM/dd/yyyy")</span></td>
-                        <td><span style="font-size: small">@project.EndDate.ToString("MM/dd/yyyy")</span></td>
+                        <td><span style="font-size: small">@project.StartDate.ToString("dd/MM/yyyy")</span></td>
+                        <td><span style="font-size: small">@project.EndDate.ToString("dd/MM/yyyy")</span></td>
                         @if (project.ProjectPriority.Name == nameof(BTProjectPriority.Urgent) || project.ProjectPriority.Name == nameof(BTProjectPriority.High))
                         {
                             <td><span class="badge rounded-pill bg-danger">@project.ProjectPriority?.Name</span></td>

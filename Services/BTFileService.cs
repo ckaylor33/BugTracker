@@ -25,6 +25,12 @@ namespace BugTracker.Services
             }
         }
 
+        public async Task<byte[]> EncodeImageAsync(string fileName)
+        {
+            var file = $"{Directory.GetCurrentDirectory()}/wwwroot/img/{fileName}";
+            return await File.ReadAllBytesAsync(file);
+        }
+
         public async Task<byte[]> ConvertFileToByteArrayAsync(IFormFile file)
         {
             try

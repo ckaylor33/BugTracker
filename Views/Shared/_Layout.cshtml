@@ -44,11 +44,11 @@
 
             <!-- Navbar brand-->
             <a class="navbar-brand me-auto" href="#"><div class="text-uppercase font-monospace">@company.Name</div></a>
-@*            <a class=" btn btn-info me-3 btn-sm" style="text-decoration:none" asp-action="Create" asp-controller="Tickets">
-                <div class="fst-button">
-                    Create Ticket
-                </div>
-                <i class="material-icons icon-sm ms-1">chevron_right</i>
+            @*            <a class=" btn btn-info me-3 btn-sm" style="text-decoration:none" asp-action="Create" asp-controller="Tickets">
+            <div class="fst-button">
+            Create Ticket
+            </div>
+            <i class="material-icons icon-sm ms-1">chevron_right</i>
             </a>*@
             <!-- Navbar items-->
             <partial name="_LoginPartial" />
@@ -228,7 +228,14 @@
                 <!-- Drawer footer        -->
                 <div class="drawer-footer border-top">
                     <div class="d-flex align-items-center">
-                        <i class="material-icons text-muted">account_circle</i>
+                        @if (btUser.AvatarFileData != null)
+                        {
+                            <img src="data:image/*;base64,@(Convert.ToBase64String(btUser.AvatarFileData))" style="width: 28px; height: 28px; object-fit: cover;" class="rounded-circle" />
+                        }
+                        else
+                        {
+                            <i class="material-icons text-muted">account_circle</i>
+                        }
                         <div class="ms-3">
                             <div class="caption">Logged in as:</div>
                             <div class="small fw-500">@btUser.FirstName: @((await RolesService.GetUserRolesAsync(btUser)).FirstOrDefault())</div>

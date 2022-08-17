@@ -28,13 +28,15 @@ namespace BugTracker.Controllers
         private readonly IBTFileService _fileService;
         private readonly IBTTicketHistoryService _historyService;
 
+
         public TicketsController(UserManager<BTUser> userManager,
                                  IBTProjectService projectService,
                                  IBTLookupService lookupService,
                                  IBTTicketService ticketService,
                                  IBTCompanyInfoService companyInfoService,
                                  IBTFileService fileService,
-                                 IBTTicketHistoryService historyService)
+                                 IBTTicketHistoryService historyService
+                                 )
         {
             _userManager = userManager;
             _projectService = projectService;

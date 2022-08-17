@@ -1,16 +1,28 @@
 ﻿@page
+@using Microsoft.AspNetCore.Identity
 @model IndexModel
+
+@inject UserManager<BTUser> UserManager
+
 @{
     ViewData["Title"] = "Profile";
     ViewData["ActivePage"] = ManageNavPages.Index;
+
+    BTUser btUser = await UserManager.GetUserAsync(User);
+
+    
 }
 
 <h4>@ViewData["Title"]</h4>
 <partial name="_StatusMessage" model="Model.StatusMessage" />
 <div class="row">
     <div class="col-md-6">
-        <form id="profile-form" method="post">
+        <form id="profile-form" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="@btUser.AvatarFileData" />
+            <input type="hidden" asp-for="@btUser.AvatarFileName" />
+            <input type="hidden" asp-for="@btUser.AvatarContentType" />
+
             <div class="form-group mt-3">
                 <label asp-for="Username"></label>
                 <input asp-for="Username" class="form-control" disabled />
@@ -20,13 +32,33 @@
                 <input asp-for="Input.PhoneNumber" class="form-control" />
                 <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
             </div>
-            <button id="update-profile-button" type="submit" class="btn btn-raised-primary mt-3">
+            <div class="mt-3">
+                <label asp-for="Input.Image" class="form-label"></label>
+                <input asp-for="Input.Image" type="file" accept=".png, .jpg, .jpeg, .gif" class="form-control"
+                       onchange="document.getElementById('imageFileData').src = window.URL.createObjectURL(this.files[0])" />
+                <span asp-validation-for="Input.Image" class="text-danger"></span>
+            </div>
+            <label>Image Preview</label>
+            @if (btUser.AvatarFileData != null)
+            {
+                <img id="imageFileData" class="img-fluid img-thumbnail my-3" style="width:100px; height:auto;" src="data:image/*;base64,@(Convert.ToBase64String(btUser.AvatarFileData))" />
+            }
+            else
+            {
+                <img id="imageFileData" class="img-fluid img-thumbnail my-3" style="width:100px; height:auto;" src="/img/projectDefault.png" />
+
+            }
+            <br/>
+            <button id="update-profile-button" type="submit" class="btn btn-raised-primary mb-3">
                 <div class="fst-button">
                     Save
                 </div>
                 <i class="material-icons icon-sm ms-1">chevron_right</i>
             </button>
         </form>
+    </div>
+    <div class="col-md-6">
+        <img src="@Model.CurrentImage" class="img-fluid rounded-circle pb-4 ps-5" width="60%;" />
     </div>
 </div>
 

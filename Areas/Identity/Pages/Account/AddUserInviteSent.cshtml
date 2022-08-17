@@ -1,7 +1,12 @@
 ﻿@page
 @model AddUserInviteSent
+
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<BTUser> UserManager
+
 @{
     ViewData["Title"] = "User invite has been sent";
+    BTUser currrentUser = await UserManager.GetUserAsync(User);
 }
 
 @{
@@ -16,7 +21,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Forgot your password?</title>
+    <title>Invite Sent</title>
     <!-- Load Favicon-->
     <link href="~/assets/img/favicon.ico" rel="shortcut icon" type="image/x-icon" />
     <!-- Load Material Icons from Google Fonts-->
@@ -48,7 +53,8 @@
                                     </div>
                                 </div>
                                 <div class="form-group d-flex flex-column align-items-center justify-content-between mt-0 mb-4">
-                                    <a class="btn btn-primary mb-1" asp-action="Dashboard" asp-controller="Home">
+                                    <a class="btn btn-raised-primary mb-1" asp-action="Dashboard" asp-controller="Home">
+                                        <input type="hidden" asp-for="@currrentUser"/> 
                                         <div class="fst-button">
                                             Return Home
                                         </div>

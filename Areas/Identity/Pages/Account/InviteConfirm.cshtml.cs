@@ -15,6 +15,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Http;
 using BugTracker.Services.Interfaces;
 using BugTracker.Data;
+using Microsoft.Extensions.Configuration;
+using System.IO;
 
 namespace BugTracker.Areas.Identity.Pages.Account
 {
@@ -24,12 +26,14 @@ namespace BugTracker.Areas.Identity.Pages.Account
         private readonly UserManager<BTUser> _userManager;
         private readonly IBTFileService _fileService;
         private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _config;
 
-        public InviteConfirmModel(UserManager<BTUser> userManager, IBTFileService fileService, ApplicationDbContext context)
+        public InviteConfirmModel(UserManager<BTUser> userManager, IBTFileService fileService, ApplicationDbContext context, IConfiguration config)
         {
             _userManager = userManager;
             _fileService = fileService;
             _context = context;
+            _config = config;
         }
 
         [BindProperty]
@@ -55,8 +59,7 @@ namespace BugTracker.Areas.Identity.Pages.Account
 
             [NotMapped]
             [DataType(DataType.Upload)]
-            public IFormFile AvatarFormFile { get; set; }
-
+            public IFormFile AvatarImage { get; set; }
 
             [Display(Name = "Avatar")]
             public string AvatarFileName { get; set; }
@@ -98,11 +101,27 @@ namespace BugTracker.Areas.Identity.Pages.Account
             }
 
 
-            if (Input?.AvatarFormFile != null)
+            if (Input.AvatarImage != null)
             {
-                user.AvatarFileData = await _fileService.ConvertFileToByteArrayAsync(Input.AvatarFormFile);
-                user.AvatarFileName = Input.AvatarFormFile.FileName;
-                user.AvatarContentType = Input.AvatarFormFile.ContentType;
+                user.AvatarFileData = await _fileService.ConvertFileToByteArrayAsync(Input.AvatarImage);
+
+                user.AvatarFileName = Input.AvatarImage.FileName;
+                user.AvatarContentType = Input.AvatarImage.ContentType;
+
+                var userAvatar = await _userManager.UpdateAsync(user);
+
+                foreach (var error in userAvatar.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                user.AvatarFileData = await _fileService.EncodeImageAsync(_config["DefaultUserImage"]);
+                user.AvatarFileName = Path.GetFileNameWithoutExtension(_config["DefaultUserImage"]);
+                user.AvatarContentType = Path.GetExtension(_config["DefaultUserimage"]);
 
                 var userAvatar = await _userManager.UpdateAsync(user);
 

@@ -4,6 +4,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using BugTracker.Models;
+using BugTracker.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -14,16 +16,21 @@ namespace BugTracker.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<BTUser> _userManager;
         private readonly SignInManager<BTUser> _signInManager;
+        private readonly IBTFileService FileService;
 
         public IndexModel(
             UserManager<BTUser> userManager,
-            SignInManager<BTUser> signInManager)
+            SignInManager<BTUser> signInManager,
+            IBTFileService fileService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            FileService = fileService;
         }
 
         public string Username { get; set; }
+
+        public string CurrentImage { get; set; }
 
         [TempData]
         public string StatusMessage { get; set; }
@@ -36,6 +43,8 @@ namespace BugTracker.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            public IFormFile Image { get; set; }
         }
 
         private async Task LoadAsync(BTUser user)
@@ -44,6 +53,11 @@ namespace BugTracker.Areas.Identity.Pages.Account.Manage
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
             Username = userName;
+
+            if (user.AvatarFileData is not null)
+            {
+                CurrentImage = FileService.ConvertByteArrayToFile(user.AvatarFileData, user.AvatarContentType);
+            }
 
             Input = new InputModel
             {
@@ -54,6 +68,12 @@ namespace BugTracker.Areas.Identity.Pages.Account.Manage
         public async Task<IActionResult> OnGetAsync()
         {
             var user = await _userManager.GetUserAsync(User);
+
+            if (user.AvatarFileData is not null)
+            {
+                CurrentImage = FileService.ConvertByteArrayToFile(user.AvatarFileData, user.AvatarContentType);
+            }
+
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
@@ -76,6 +96,16 @@ namespace BugTracker.Areas.Identity.Pages.Account.Manage
                 await LoadAsync(user);
                 return Page();
             }
+
+            //If and only if the user selected a new image will I update their profile
+            if (Input.Image != null)
+            {
+                user.AvatarFileData = await FileService.ConvertFileToByteArrayAsync(Input.Image);
+                user.AvatarFileName = Input.Image.FileName;
+                user.AvatarContentType = Input.Image.ContentType;
+            }
+
+            await _userManager.UpdateAsync(user);
 
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             if (Input.PhoneNumber != phoneNumber)

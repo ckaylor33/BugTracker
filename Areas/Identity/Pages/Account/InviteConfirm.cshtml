@@ -45,7 +45,7 @@
                                         <h1 class="display-5 mb-0">@ViewData["Title"]</h1>
                                         <div class="subheading-1 mb-5">Enter new password.</div>
                                     </div>
-                                    <form method="post">
+                                    <form method="post" enctype="multipart/form-data" method="post">
                                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                         <input asp-for="Input.Code" type="hidden" />
                                         <div class="form-floating mb-3">
@@ -64,14 +64,14 @@
                                             <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
                                         </div>
                                         <div class="mb-3">
-                                            <label asp-for="Input.AvatarFormFile" class="form-label"></label>
-                                            <input asp-for="Input.AvatarFormFile" type="file" id="formFile" accept=".png, .jpg, .jpeg, .gif" class="form-control"
+                                            <label asp-for="Input.AvatarImage" class="form-label"></label>
+                                            <input asp-for="Input.AvatarImage" type="file" id="formFile" accept=".png, .jpg, .jpeg, .gif" class="form-control"
                                                    onchange="document.getElementById('imageFileData').src = window.URL.createObjectURL(this.files[0])" />
-                                            <span asp-validation-for="Input.AvatarFormFile" class="text-danger"></span>
+                                            <span asp-validation-for="Input.AvatarImage" class="text-danger"></span>
                                         </div>
                                      
                                             <label class="me-3 mt-3">Avatar Preview</label>
-                                            @if (Model.Input?.AvatarFileData != null)
+                                            @if (Model.Input?.AvatarImage != null)
                                             {
                                                 <img id="imageFileData" class="img-fluid img-thumbnail mt-3 mb-3" style="max-width: 100px; height: auto;" src="data:image/*;base64,@(Convert.ToBase64String(Model.Input.AvatarFileData))" />
                                             }
