@@ -53,7 +53,7 @@ namespace BugTracker.Services
 
             await AddCompanyAsync(newCompany);
 
-            //await  _rolesService.AddUserToRoleAsync(User, nameof(Roles.Admin));
+            /*await  _rolesService.AddUserToRoleAsync(User, nameof(Roles.Admin));*/
 
             return newCompany;
 

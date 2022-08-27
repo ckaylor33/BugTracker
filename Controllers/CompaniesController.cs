@@ -12,6 +12,7 @@ using BugTracker.Extensions;
 using BugTracker.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using BugTracker.Models.Enums;
+using BugTracker.Models.ViewModels;
 
 namespace BugTracker.Controllers
 {
@@ -20,12 +21,16 @@ namespace BugTracker.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<BTUser> _userManager;
         private readonly IBTCompanyInfoService _companyInfoService;
+        private readonly IBTRolesService _rolesService;
+        private readonly IBTFileService _fileService;
 
-        public CompaniesController(ApplicationDbContext context, UserManager<BTUser> userManager, IBTCompanyInfoService companyInfoService) //constructor - how we instantiate a class
+        public CompaniesController(ApplicationDbContext context, UserManager<BTUser> userManager, IBTCompanyInfoService companyInfoService, IBTRolesService rolesService, IBTFileService fileService) //constructor - how we instantiate a class
         {
             _context = context;
             _userManager = userManager;
             _companyInfoService = companyInfoService;
+            _rolesService = rolesService;
+            _fileService = fileService;
         }
 
         // GET: Companies
@@ -58,7 +63,9 @@ namespace BugTracker.Controllers
         // GET: Companies/Create
         public IActionResult Create()
         {
-            return View();
+            AddCompanyWithUserVM model = new();
+
+            return View(model);
         }
 
         // POST: Companies/Create
@@ -66,15 +73,54 @@ namespace BugTracker.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description")] Company company)
+        [Authorize(Roles = nameof(Roles.Admin))]
+        public async Task<IActionResult> Create(AddCompanyWithUserVM model)
         {
-            if (ModelState.IsValid)
+            BTUser bTUser = await _userManager.GetUserAsync(User);
+
+            if (ModelState.IsValid && bTUser.Email == "kaylor33@hotmail.co.uk")
             {
-                _context.Add(company);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                await _companyInfoService.AddCompanyAsync(model.Company);
+
+                BTUser newUser = new BTUser
+                {
+                    Email = model.NewUser.Email,
+                    UserName = model.NewUser.Email,
+                    FirstName = model.NewUser.FirstName,
+                    LastName = model.NewUser.LastName,
+                    EmailConfirmed = true,
+                    CompanyId = model.Company.Id,
+                };
+
+                try
+                {
+                    if (model.NewUser.AvatarFormFile != null)
+                    {
+                        newUser.AvatarFileData = await _fileService.ConvertFileToByteArrayAsync(model.NewUser.AvatarFormFile);
+                        newUser.AvatarFileName = model.NewUser.AvatarFormFile.FileName;
+                        newUser.AvatarContentType = model.NewUser.AvatarFormFile.ContentType;
+                    }
+
+                    if (model.Company.Members.Count() == 0)
+                    {
+                        await _userManager.CreateAsync(newUser, "Abc&123!");
+                        await _rolesService.AddUserToRoleAsync(newUser, nameof(Roles.Admin));
+                        model.Company.Members.Add(newUser);
+
+                    }
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("*************  ERROR  *************");
+                    Console.WriteLine("Error adding new user to new company.");
+                    Console.WriteLine(ex.Message);
+                    Console.WriteLine("***********************************");
+                    throw;
+                }
             }
-            return View(company);
+            return View(model.Company);
         }
 
         // GET: Companies/Edit/5
@@ -126,7 +172,7 @@ namespace BugTracker.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Details), new {id = company.Id});
+                return RedirectToAction(nameof(Details), new { id = company.Id });
             }
             return View(company);
         }

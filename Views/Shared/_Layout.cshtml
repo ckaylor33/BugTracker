@@ -2,11 +2,13 @@
 @using BugTracker.Models.Enums
 @using BugTracker.Services.Interfaces
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.Extensions.Configuration;
 
 @inject SignInManager<BTUser> SignInManager
 @inject UserManager<BTUser> UserManager
 @inject IBTCompanyInfoService CompanyService
 @inject IBTRolesService RolesService
+@inject IConfiguration Config;
 
 @{
     BTUser btUser = await UserManager.GetUserAsync(User);
@@ -159,6 +161,10 @@
                                     <a class="nav-link" asp-action="ManageUserRoles" asp-controller="UserRoles"><span class="material-icons me-2">person</span> Manage Roles</a>
                                     <a class="nav-link" asp-action="Details" asp-controller="Companies" asp-route-id="@company.Id">Company Details</a>
                                     <a class="nav-link" href="#">Member Profiles</a>
+                                    @if (btUser.Email == "kaylor33@hotmail.co.uk")
+                                    {
+                                        <a class="nav-link" asp-controller="Companies" asp-action="Create">Add Company</a>
+                                    }
                                 </nav>
                             </div>
                         }
