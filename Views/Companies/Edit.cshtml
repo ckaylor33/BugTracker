@@ -64,4 +64,11 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        //Default font size but not for placeholder...
+        $('#Description').summernote({
+            placeholder: "Ticket Description",
+        });
+    </script>
     }

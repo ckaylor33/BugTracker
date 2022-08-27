@@ -223,7 +223,7 @@
                                 <div class="media-body mt-1">
                                     <span class="text-muted" style="font-size:small;">
                                         @@ @comment.User?.FullName
-                                        <span class="float-right" >@comment.Created.ToString("dd.MM.yyyy h:ss tt")</span>:
+                                        <span class="float-right">@comment.Created.ToString("dd.MM.yyyy h:ss tt")</span>:
                                     </span>
                                 </div>
                                 <span class="message text-dark mt-1" style="font-size:medium;">@Html.Raw(comment.Comment)</span>
@@ -354,3 +354,13 @@
         <i class="material-icons icon-sm ms-1">chevron_right</i>
     </a>
 </div>
+
+@section Scripts{
+
+    <script>
+        //Default font size but not for placeholder...
+        $('#Comment').summernote({
+            placeholder: "Add comment...",
+        });
+    </script>
+}
