@@ -271,7 +271,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row mt-5">
+                <div class="row mt-5 pt-5">
                     <div class="mb-4 text-center text-md-start col">
                         <div class="text-xs font-monospace text-muted mb-2">Urgent Tickets:</div>
                         <a class=" btn btn-raised-danger" style="text-decoration:none" asp-action="UrgentTickets" asp-controller="Tickets">
@@ -286,6 +286,26 @@
                         <a class="btn btn-raised-danger" asp-action="HighPriorityTickets" asp-controller="Tickets">
                             <div class="fst-button">
                                 @Model.Tickets.Where(p => p.TicketPriority.Name == nameof(BTTicketPriority.High) && p.Archived == false).Count()
+                            </div>
+                            <i class="material-icons icon-sm ms-1">chevron_right</i>
+                        </a>
+                    </div>
+                </div>
+                <div class="row mt-5">
+                    <div class="mb-4 text-center text-md-start col">
+                        <div class="text-xs font-monospace text-muted mb-2">Medium Priority Tickets:</div>
+                        <a class=" btn btn-raised-success" style="text-decoration:none" asp-action="AllTickets" asp-controller="Tickets">
+                            <div class="fst-button">
+                                @Model.Tickets.Where(p => p.TicketPriority.Name == nameof(BTTicketPriority.Medium) && p.Archived == false).Count()
+                            </div>
+                            <i class="material-icons icon-sm ms-1">chevron_right</i>
+                        </a>
+                    </div>
+                    <div class="mb-4 text-center text-md-start col">
+                        <div class="text-xs font-monospace text-muted mb-2">Low Priority Tickets:</div>
+                        <a class="btn btn-raised-success" asp-action="AllTickets" asp-controller="Tickets">
+                            <div class="fst-button">
+                                @Model.Tickets.Where(p => p.TicketPriority.Name == nameof(BTTicketPriority.Low) && p.Archived == false).Count()
                             </div>
                             <i class="material-icons icon-sm ms-1">chevron_right</i>
                         </a>
@@ -337,7 +357,7 @@
                                     }
                                     else
                                     {
-                                        <img src="~/img/avatardefault_92824.png" style="width: 28px; height: 28px; object-fit: cover;" class="rounded-circle"/>
+                                        <img src="~/img/avatardefault_92824.png" style="width: 28px; height: 28px; object-fit: cover;" class="rounded-circle" />
                                     }
                                 </td>
                             </tr>
@@ -450,7 +470,7 @@
         @Model.Tickets.Where(t=> t.TicketStatus.Name ==nameof(BTTicketStatus.New)).Count(),
         @Model.Tickets.Where(t=> t.TicketStatus.Name ==nameof(BTTicketStatus.Resolved)).Count(),
         @Model.Tickets.Where(t=> t.TicketStatus.Name ==nameof(BTTicketStatus.Testing)).Count()
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ],
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ],
                     backgroundColor: [primaryColor, infoColor, secondaryColor, warningColor],
                 }],
             },
@@ -527,7 +547,7 @@
         @Model.Tickets.Where(t => t.TicketPriority.Name == nameof(BTTicketPriority.Medium) && t.Archived == false).Count(),
         @Model.Tickets.Where(t => t.TicketPriority.Name == nameof(BTTicketPriority.High) && t.Archived == false).Count(),
         @Model.Tickets.Where(t => t.TicketPriority.Name == nameof(BTTicketPriority.Urgent) && t.Archived == false).Count()
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ],
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ],
                     backgroundColor: [primaryColor, infoColor, secondaryColor, warningColor],
                 }],
             },
