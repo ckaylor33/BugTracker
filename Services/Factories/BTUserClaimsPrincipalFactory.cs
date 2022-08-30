@@ -8,7 +8,7 @@ namespace BugTracker.Services.Factories
 {
     public class BTUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<BTUser, IdentityRole>
     {
-        //call on the parent to utilise the params in calling its' constructor - calling the parent to 
+        //call on the parent to utilise the params in calling its constructor - calling the parent to 
         //setup the class. No difference between the child and parent so we let the parent initialise
         //the class. Pass the params straight through and into the parent for initialisation of this class.
         public BTUserClaimsPrincipalFactory(UserManager<BTUser> userManager,

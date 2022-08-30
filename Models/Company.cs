@@ -21,3 +21,7 @@ namespace BugTracker.Models
         public virtual ICollection<Invite> Invites { get; set; } = new HashSet<Invite>();
     }
 }
+
+
+
+

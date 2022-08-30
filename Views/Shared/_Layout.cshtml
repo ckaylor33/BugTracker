@@ -50,7 +50,7 @@
             <button class="btn btn-lg btn-icon order-1 order-lg-0" id="drawerToggle" href="javascript:void(0);"><i class="material-icons">menu</i></button>
 
             <!-- Navbar brand-->
-            <a class="navbar-brand me-auto" href="#"><div class="text-uppercase font-monospace">@company.Name</div></a>
+            <a class="navbar-brand me-auto" asp-action="Dashboard" asp-controller="Home"><div class="text-uppercase font-monospace">@company.Name</div></a>
             @*            <a class=" btn btn-info me-3 btn-sm" style="text-decoration:none" asp-action="Create" asp-controller="Tickets">
             <div class="fst-button">
             Create Ticket
@@ -139,8 +139,13 @@
                                     <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="MyTickets">My Tickets</a>
                                 }
                                 <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="AllTickets">All Tickets</a>
+
+
                                 <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="UrgentTickets">Urgent Tickets</a>
                                 <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="HighPriorityTickets">High Priority Tickets</a>
+                                <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="MediumPriorityTickets">Medium Priority Tickets</a>
+                                <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="LowPriorityTickets">Low Priority Tickets</a>
+
                                 <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="ArchivedTickets">Archived Tickets</a>
                                 @if (User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
                                 {
@@ -268,7 +273,7 @@
             <footer class="py-4 mt-auto border-top" style="min-height: 74px">
                 <div class="container-xl px-5">
                     <div class="d-flex flex-column flex-sm-row align-items-center justify-content-sm-between small">
-                    <div class="me-sm-3 mb-2 mb-sm-0"><div class="fw-500 text-dark">Copyright &copy; @DateTimeOffset.Now.Year | <a class="text-decoration-none text-dark fw-bolder" target="_blank" href="https://charliekaylor.com">charliekaylor.com</a></div></div>
+                        <div class="me-sm-3 mb-2 mb-sm-0"><div class="fw-500 text-dark">Copyright &copy; @DateTimeOffset.Now.Year | <a class="text-decoration-none text-dark fw-bolder" target="_blank" href="https://charliekaylor.com">charliekaylor.com</a></div></div>
                         <div class="d-flex ms-sm-2">
                             @*                            <a class="text-decoration-none" href="#!">Privacy Policy</a>
                             <div class="mx-1">&middot;</div>

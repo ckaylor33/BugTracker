@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace BugTracker.Models
 {
     //IdentityUser will extend to BTUser - class that's built into micrsoft. String as primary key, also inherits
-    //from IUClaim, IURole, IULogin (all of this is built in to the class). Gives ability to cutomise BTUser with 
+    //from IUClaim, IURole, IULogin (all of this is built in to the class). Gives ability to customise BTUser with 
     //additional info not there by default - phone number, email, etc
     public class BTUser : IdentityUser
     {

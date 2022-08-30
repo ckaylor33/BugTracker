@@ -183,6 +183,28 @@ namespace BugTracker.Controllers
             return View(tickets);
         }
 
+        //GET: HighPriorityTickets
+        [HttpGet]
+        public async Task<IActionResult> MediumPriorityTickets()
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            List<Ticket> tickets = (await _ticketService.GetAllTicketsByCompanyAsync(companyId)).ToList();
+
+            return View(tickets);
+        }
+
+        //GET: HighPriorityTickets
+        [HttpGet]
+        public async Task<IActionResult> LowPriorityTickets()
+        {
+            int companyId = User.Identity.GetCompanyId().Value;
+
+            List<Ticket> tickets = (await _ticketService.GetAllTicketsByCompanyAsync(companyId)).ToList();
+
+            return View(tickets);
+        }
+
         [HttpGet]
         public async Task<IActionResult> Dashboard()
         {

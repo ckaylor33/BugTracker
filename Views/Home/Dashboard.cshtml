@@ -294,7 +294,7 @@
                 <div class="row mt-5">
                     <div class="mb-4 text-center text-md-start col">
                         <div class="text-xs font-monospace text-muted mb-2">Medium Priority Tickets:</div>
-                        <a class=" btn btn-raised-success" style="text-decoration:none" asp-action="AllTickets" asp-controller="Tickets">
+                        <a class=" btn btn-raised-success" style="text-decoration:none" asp-action="MediumPriorityTickets" asp-controller="Tickets">
                             <div class="fst-button">
                                 @Model.Tickets.Where(p => p.TicketPriority.Name == nameof(BTTicketPriority.Medium) && p.Archived == false).Count()
                             </div>
@@ -303,7 +303,7 @@
                     </div>
                     <div class="mb-4 text-center text-md-start col">
                         <div class="text-xs font-monospace text-muted mb-2">Low Priority Tickets:</div>
-                        <a class="btn btn-raised-success" asp-action="AllTickets" asp-controller="Tickets">
+                        <a class="btn btn-raised-success" asp-action="LowPriorityTickets" asp-controller="Tickets">
                             <div class="fst-button">
                                 @Model.Tickets.Where(p => p.TicketPriority.Name == nameof(BTTicketPriority.Low) && p.Archived == false).Count()
                             </div>
