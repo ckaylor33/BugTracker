@@ -141,16 +141,32 @@
                                 <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="AllTickets">All Tickets</a>
 
 
-                                <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="UrgentTickets">Urgent Tickets</a>
-                                <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="HighPriorityTickets">High Priority Tickets</a>
-                                <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="MediumPriorityTickets">Medium Priority Tickets</a>
-                                <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="LowPriorityTickets">Low Priority Tickets</a>
 
                                 <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="ArchivedTickets">Archived Tickets</a>
                                 @if (User.IsInRole(nameof(Roles.Admin)) || User.IsInRole(nameof(Roles.ProjectManager)))
                                 {
                                     <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="UnassignedTickets">Unassigned Tickets</a>
                                 }
+                            </nav>
+                        </div>
+
+                        <!-- Drawer link (Tickets)-->
+                        <a class="nav-link collapsed" href="javascript:void(0);" data-bs-toggle="collapse" data-bs-target="#collapseTicketPriorities" aria-expanded="false" aria-controls="collapseDashboards">
+                            <div class="nav-link-icon">
+                                <span class="material-icons">
+                                    category
+                                </span>
+                            </div>
+                            Ticket Priorities
+                            <div class="drawer-collapse-arrow"><i class="material-icons">expand_more</i></div>
+                        </a>
+                        <!-- Nested drawer nav (Ticket Links)-->
+                        <div class="collapse" id="collapseTicketPriorities" aria-labelledby="headingOne" data-bs-parent="#drawerAccordion">
+                            <nav class="drawer-menu-nested nav">
+                                <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="UrgentTickets">Urgent Tickets</a>
+                                <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="HighPriorityTickets">High Priority Tickets</a>
+                                <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="MediumPriorityTickets">Medium Priority Tickets</a>
+                                <a class="nav-link" asp-area="" asp-controller="Tickets" asp-action="LowPriorityTickets">Low Priority Tickets</a>
                             </nav>
                         </div>
 
