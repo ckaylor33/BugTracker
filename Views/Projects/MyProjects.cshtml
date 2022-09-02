@@ -51,7 +51,7 @@
                         {
                             <tr>
                                 <td><strong>@item.Name</strong></td>
-                                <td>@item.Description</td>
+                                <td>@Html.Raw(item.Description)</td>
                                 <td><span style="font-size: small">@item.StartDate.ToString("MM/dd/yyyy")</span></td>
                                 <td><span style="font-size: small">@item.EndDate.ToString("MM/dd/yyyy")</span></td>
                                 <td>

@@ -174,7 +174,7 @@
                     {
                         <tr>
                             <td>@project.Name</td>
-                            <td>@project.Description</td>
+                            <td>@Html.Raw(project.Description)</td>
                             @if (project.Archived == true)
                             {
                                 <td><span class="badge rounded-pill bg-light text-dark">Archived</span></td>
