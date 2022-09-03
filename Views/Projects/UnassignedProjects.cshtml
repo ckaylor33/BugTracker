@@ -1,20 +1,29 @@
 ﻿@model IEnumerable<BugTracker.Models.Project>
+@using BugTracker.Models.Enums
+@using Microsoft.AspNetCore.Identity
+
+@inject UserManager<BTUser> UserManager
 
 @{
     ViewData["Title"] = "Unassigned Projects";
+    BTUser btUser = await UserManager.GetUserAsync(User);
 }
 
 <h1>Unassigned Projects</h1>
 
 
-<a class="btn btn-outline-info my-3" asp-action="Create" asp-controller="Projects">
-    <div class="fst-button">
-        Create New Project
-    </div>
-    <i class="material-icons icon-sm ms-1">chevron_right</i>
-</a>
+@*Can access the principal user in different ways - see below*@
+@if (User.IsInRole(Roles.Admin.ToString()) || User.IsInRole(nameof(Roles.ProjectManager)))
+{
+    <a asp-action="Create" class="btn btn-outline-info mb-3">
+        <div class="fst-button">
+            Create A Project
+        </div>
+        <i class="material-icons icon-sm ms-1">chevron_right</i>
+    </a>
+}
 
-<hr/>
+<hr />
 
 <!-- Table -->
 <div class="card card-raised mb-5">
@@ -42,9 +51,12 @@
                 </tr>
             </thead>
             <tbody>
+
                 @* Table body *@
-                @foreach (var item in Model)
+                @foreach (Project item in Model.OrderByDescending(p => p.StartDate))
                 {
+                    var description = Html.Raw(item.Description);
+
                     <tr>
                         <td>
                             <strong>
@@ -52,7 +64,7 @@
                             </strong>
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => Html.Raw(item.Description))
+                            @Html.DisplayFor(modelItem => description)
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.StartDate)
@@ -76,13 +88,24 @@
                         </td>
                         <td>
                             <div class="row mx-3">
-
-                            <a class="btn btn-sm btn-outline-info flex-row justify-content-center" asp-action="AssignPM" asp-controller="Projects" asp-route-projectId="@item.Id">
-                                <div class="fst-button">
-                                    Assign PM
-                                </div>
-                                <i class="material-icons icon-sm ms-1">chevron_right</i>
-                            </a>
+                                @if (User.IsInRole(nameof(Roles.Admin)))
+                                {
+                                    <a class="btn btn-sm btn-outline-info flex-row justify-content-center" asp-action="AssignPM" asp-controller="Projects" asp-route-projectId="@item.Id">
+                                        <div class="fst-button">
+                                            Assign PM
+                                        </div>
+                                        <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a class="btn btn-sm btn-outline-info flex-row justify-content-center" asp-action="Details" asp-controller="Projects" asp-route-projectId="@item.Id">
+                                        <div class="fst-button">
+                                            Details
+                                        </div>
+                                        <i class="material-icons icon-sm ms-1">chevron_right</i>
+                                    </a>
+                                }
                             </div>
                         </td>
                     </tr>

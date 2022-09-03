@@ -42,7 +42,7 @@
                     <thead>
                         <tr>
                             <th>@Html.DisplayNameFor(model => model.Name)</th>
-                            <th>@Html.DisplayNameFor(model => Html.Raw(model.Description))</th>
+                            <th>@Html.DisplayNameFor(model => model.Description)</th>
                             <th>@Html.DisplayNameFor(model => model.StartDate)</th>
                             <th>@Html.DisplayNameFor(model => model.EndDate)</th>
                             <th>
@@ -60,9 +60,10 @@
                         {
                             @if (item.ProjectPriority.Name == nameof(BTProjectPriority.High))
                             {
+                                var description = Html.Raw(item.Description);
                                 <tr>
                                     <td><strong>@item.Name</strong></td>
-                                    <td>@item.Description</td>
+                                    <td>@description</td>
                                     <td><span style="font-size: small">@item.StartDate.ToString("MM/dd/yyyy")</span></td>
                                     <td><span style="font-size: small">@item.EndDate.ToString("MM/dd/yyyy")</span></td>
                                     <td>

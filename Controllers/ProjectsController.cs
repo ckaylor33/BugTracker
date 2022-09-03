@@ -115,7 +115,6 @@ namespace BugTracker.Controllers
         }
 
         //GET: UnassignedProjects
-        [Authorize(Roles = nameof(Roles.Admin))]
         public async Task<IActionResult> UnassignedProjects()
         {
             int companyId = User.Identity.GetCompanyId().Value;
