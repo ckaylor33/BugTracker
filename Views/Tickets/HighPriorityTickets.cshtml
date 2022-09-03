@@ -65,7 +65,7 @@
                         {
                             if (item.TicketPriority.Name == nameof(BTTicketPriority.High) && item.Archived == false)
                             {
-                                var description = Html.Raw(item.Description);
+                                var description = (Html.Raw(item.Description)).ToString();
 
                                 <tr>
                                     <td>
