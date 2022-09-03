@@ -112,7 +112,7 @@
                     <a style="text-decoration:none" asp-action="Details" asp-controller="Projects" asp-route-id="@Model.ProjectId">Project: @Model.Project.Name</a>
                 </h6>
                 <h6>Ticket: @Model.Title</h6>
-                <p class="text-muted">Ticket Description: @Model.Description</p>
+                <p class="text-muted">Ticket Description: @Html.Raw(Model.Description)</p>
                 <hr />
                 <div class="progress-container progress-info m-b-25 mt-10">
                     <span class="progress-badge" style="font-size:small">Project Progress Bar</span>

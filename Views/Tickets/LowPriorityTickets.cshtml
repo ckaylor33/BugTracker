@@ -65,6 +65,8 @@
                         {
                             if (item.TicketPriority.Name == nameof(BTTicketPriority.Low) && item.Archived == false)
                             {
+                                var description = Html.Raw(item.Description);
+
                                 <tr>
                                     <td>
                                         <strong>
@@ -72,7 +74,7 @@
                                         </strong>
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.Description)
+                                        @Html.DisplayFor(modelItem => description)
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.Project.Name)

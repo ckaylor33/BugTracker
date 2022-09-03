@@ -175,6 +175,8 @@
                 @* Table body *@
                 @foreach (var item in Model.OrderByDescending(d => d.Created))
                 {
+                    var description = Html.Raw(item.Description);
+
                     <tr>
                         <td>
                             <strong>
@@ -182,7 +184,7 @@
                             </strong>
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Description)
+                            @Html.DisplayFor(modelItem => description)
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.Project.Name)
