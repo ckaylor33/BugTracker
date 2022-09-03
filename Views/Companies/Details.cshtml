@@ -9,6 +9,7 @@
     ViewData["Title"] = "Details";
     BTUser btUser = await UserManager.GetUserAsync(User);
     int companyId = User.Identity.GetCompanyId().Value;
+    var description = (Html.Raw(Model.Description)).ToString();
 }
 
 <h1>Details</h1>
@@ -27,7 +28,7 @@
                 <hr />
                 <ul class="list-group list-group-flush mb-0 pb-0">
                     <li class="list-group-item"><strong>Company: </strong><span class="">@Html.DisplayFor(model => model.Name)</span></li>
-                    <li class="list-group-item"><strong>Description: </strong><span class="">@Html.DisplayFor(model => model.Description)</span></li>
+                    <li class="list-group-item"><strong>Description: </strong><span class="">@Html.DisplayFor(model => description)</span></li>
                 </ul>
                 <div>
                     <hr />
