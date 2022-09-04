@@ -51,7 +51,7 @@
                     <div class="card-body p-5">
                         <form method="post" asp-action="AssignDeveloper" asp-controller="Tickets">
                             <input hidden asp-for="Ticket.Id" />
-                            <p>Description: @Model.Ticket.Description</p>
+                            <p>Description: @Html.Raw(Model.Ticket.Description)</p>
                             @if (btUser.Id == projectManagerId || User.IsInRole(nameof(Roles.Admin)))
                             {
                                 <div class="form-floating mb-3">
